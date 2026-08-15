@@ -1,0 +1,16 @@
+# Maze size
+WIDTH=2
+HEIGHT=3
+
+# Entry and exit
+ENTRY=0,0
+EXIT=1,1
+
+# Output
+OUTPUT_FILE=maze.txt
+
+# Perfect maze
+PERFECT=True
+
+# Optional
+SEED=42
