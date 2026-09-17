@@ -31,8 +31,8 @@ class Cell:
         self.visited = False
         self.is_42 = False
 
-    def show(self) -> None:
-        print(f"({self.row}, {self.col})", end="")
+    def position(self) -> str:
+        return f"({self.row}, {self.col}) "
 
     def hex(self) -> str:
         return hex(self.north + 2*self.east + 4*self.south + 8*self.west)[2:]
