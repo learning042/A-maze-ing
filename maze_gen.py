@@ -12,6 +12,8 @@ class MazeGenerator(ABC):
 class DfsGenerator(MazeGenerator):
     def generator() -> Maze:
         ...
+        start = (0, 0) # CHANGE
+
         # 1 Set Start
         # 2 WALK opening not-visited cells
         # 3 IF NOT AVAILABLE cells around
