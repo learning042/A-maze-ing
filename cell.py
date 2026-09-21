@@ -14,7 +14,7 @@ class Cell:
 
         Args:
             ----> column
-            |
+           |
             v
             row
 

@@ -28,7 +28,7 @@ class Maze:
             clear: bool = False,
             append: bool = False
          ) -> None:
-        """
+       """
         Print the given cell attribute of each cell.
           
         Options:
@@ -36,30 +36,33 @@ class Maze:
             append : If it is True, the content will be appended to the file
             clear : If it is True, all the previous content in the file
                     will be deleted before adding the new content
-        """
+       """
+       mode = "a" if append else "w"
+       context: IO[str] | nullcontext = nullcontext(filename)
+       if filename != "sys.stdout":
+           context = open(filename, mode)
+           with context as f:
+               if clear:
+                   f.seek(0)
+                   f.truncate()
+                   for row in self.grid:
+                       for cell in row:
+                           value = getattr(cell, attribute)
+                           if callable(value):
+                               value = value()
+                           print(value, file=f, end="")
+                           print(file=f)
 
-        mode = "a" if append else "w"
-        context: IO[str] | nullcontext = nullcontext(filename)
-        if filename != "sys.stdout":
-            context = open(filename, mode)
-        with context as f:
-            if clear:
-                f.seek(0)
-                f.truncate()
-            for row in self.grid:
-                for cell in row:
-                    value = getattr(cell, attribute)
-                    if callable(value):
-                        value = value()
-                    print(value, file=f, end="")
-                print(file=f)
+    def mark_visited(self, row: int, column: int) -> None:
+        cell = self.grid[row][column]
+        cell.visited = True
 
 
 
 def main() -> None:
     maze = Maze(5, 10)
-    maze.show("hex", "hello.txt")
-    maze.show("position", "hello.txt")
+    maze.show("hex")
+    maze.show("position")
 
 
 if __name__ == "__main__":
