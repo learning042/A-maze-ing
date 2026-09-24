@@ -82,9 +82,32 @@ class Maze:
         head.break_wall(subtract_tuples(head_pos, tail_pos))
         tail.break_wall(subtract_tuples(tail_pos, head_pos))
 
+    def print_maze(self) -> None:
+        for row in self.grid:
+            for cell in row:
+                if cell.north:
+                    print("###", end="")
+            print("#")
+            for cell in row:
+                if cell.west:
+                    print("#", end="")
+                else:
+                    print(" ", end="")
+                print("  ", end="")
+            print("#")
+        for _ in range(self.width):
+            print("###", end="")
+        print("#")
+
+            
+
+
+                
+
+
 
 def main() -> None:
-    maze = Maze(5, 10)
+    maze = Maze(20, 15)
     #around = maze.grid
     #for lista in around:
     #    for cell in lista:
@@ -100,6 +123,7 @@ def main() -> None:
     maze.break_walls((5, 1), (5, 2))
     print(head.north)
     print(tail.south)
+    maze.print_maze()
 
 
 if __name__ == "__main__":
