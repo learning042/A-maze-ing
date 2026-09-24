@@ -13,6 +13,7 @@ DIRECTIONS = {
     "west": WEST
 }
 
+
 class Cell:
     """
     Defines a 2D cell which has properties like its position and which
@@ -52,10 +53,9 @@ class Cell:
     def hex(self) -> str:
         return hex(self.north + 2*self.east + 4*self.south + 8*self.west)[2:]
 
-    def break_wall(self, direction: tuple[int, int]) -> None:
+    def break_wall_from_cell(self, direction: tuple[int, int]) -> None:
         wall = next(w for w in DIRECTIONS.keys() if DIRECTIONS[w] == direction)
         setattr(self, wall, False)
-        
-            
+
     def mark_visited(self) -> None:
         self.visited = True

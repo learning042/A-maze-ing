@@ -1,6 +1,7 @@
 from cell import Cell
 from math import sqrt
 from tuple_op import sum_tuples, subtract_tuples
+from maze import Maze
 import random
 
 NORTH = (0, -1)
@@ -8,19 +9,6 @@ EAST = (1, 0)
 SOUTH = (0, 1)
 WEST = (-1, 0)
 
-
-def calculate_distance(p1: tuple[int, int], p2: tuple[int, int] = (0, 0)) -> float:
-    """
-    Calculate the distance between two points. 
-    If p2 is not specified It is considered
-    the distance between p1 and the origin
-    """
-    return (
-        sqrt(
-            (p1[0] - p2[0]) ** 2 +
-            (p1[1] - p2[1]) ** 2
-            )
-        )
 
 
 class Cursor:
