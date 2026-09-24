@@ -15,7 +15,6 @@ class DFSGenerator(MazeGenerator):
         stack = [maze.get_cell(*start)]  # 1 Set Start
         while stack:
             current = stack[-1]
-            print(current.position())
             neighbors = maze.return_available_neighbors(current)
             if not neighbors:
                 stack.pop()

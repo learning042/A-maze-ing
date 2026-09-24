@@ -1,14 +1,14 @@
 from cell import Cell
 from tuple_op import sum_tuples, subtract_tuples
-from typing import Any, TextIO, IO
+from typing import IO
 import sys
 from contextlib import nullcontext
 
 
-NORTH = (0, -1)
-EAST = (1, 0)
-SOUTH = (0, 1)
-WEST = (-1, 0)
+NORTH = (1, 0)
+EAST = (0, -1)
+SOUTH = (-1, 0)
+WEST = (0, 1)
 
 
 class Maze:
@@ -25,7 +25,10 @@ class Maze:
         """
         self.width = width
         self.height = height
-        self.grid = [[Cell(row, col) for col in range(width)] for row in range(height)]
+        self.grid = [
+                     [Cell(row, col) for col in range(width)]
+                     for row in range(height)
+                     ]
         self.start = start
         self.mark_visited(*self.start)
 
@@ -49,7 +52,7 @@ class Maze:
                     value = getattr(cell, attribute)
                     if callable(value):
                         value = value()
-                    print(value, file=f, end=" ")
+                    print(value, file=f, end="")
                 print(file=f)
 
     def mark_visited(self, row: int, column: int) -> None:
@@ -70,8 +73,6 @@ class Maze:
                 continue
             if not cell.visited and not cell.is_42:
                 not_visited.append(cell)
-        #nv = [n.position() for n in not_visited]
-        #print(f"not_visited {nv}")
         return not_visited
 
     def get_cell(self, row: int, column: int) -> Cell:
@@ -84,26 +85,25 @@ class Maze:
         next_cell.break_wall_from_cell(subtract_tuples(next_pos, curr_pos))
 
     def print_maze(self) -> None:
+        print("+" + "---+" * self.width)
         for row in self.grid:
+            row_raw = "|"
             for cell in row:
-                if cell.north:
-                    print("###", end="")
-            print("#")
-            for cell in row:
-                if cell.west:
-                    print("#", end="")
+                if cell.east:
+                    row_raw += "   |"
                 else:
-                    print(" ", end="")
-                print("  ", end="")
-            print("#")
-        for _ in range(self.width):
-            print("###", end="")
-        print("#")
+                    row_raw += "    "
+            print(row_raw)
+            row_bottom = "+"
+            for cell in row:
+                if cell.south:
+                    row_bottom += "---+"
+                else:
+                    row_bottom += "   +"
+            print(row_bottom)
 
 
-
-
-def main() -> None:
+def main2() -> None:
     maze = Maze(5, 5)
     maze.print_maze()
     print()
@@ -111,6 +111,13 @@ def main() -> None:
     next = maze.get_cell(3, 3)
     maze.break_wall(curr, next)
     print(curr.east)
+    maze.print_maze()
+
+
+def main() -> None:
+    from maze_gen import DFSGenerator
+    gen = DFSGenerator()
+    maze = gen.generator(10, 10)
     maze.print_maze()
 
 

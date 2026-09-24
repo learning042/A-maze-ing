@@ -3,7 +3,7 @@ WIDTH=2
 HEIGHT=3
 
 # Entry and exit
-=ENTRY=0,0
+ENTRY=0,0
 EXIT=1,1
 
 # Output
