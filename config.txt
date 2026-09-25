@@ -1,10 +1,10 @@
 # Maze size
-WIDTH=2
-HEIGHT=3
+WIDTH=20
+HEIGHT=20
 
 # Entry and exit
 ENTRY=0,0
-EXIT=1,1
+EXIT=19,20
 
 # Output
 OUTPUT_FILE=maze.txt

@@ -4,6 +4,12 @@ from typing import IO
 import sys
 from contextlib import nullcontext
 
+RESET = "\033[0m"
+WALL_COLOR = "\033[38;2;200;200;220m"   # cinza claro / lavanda
+START_COLOR = "\033[48;2;170;80;220m"   # roxo (fundo)
+END_COLOR = "\033[48;2;220;60;90m"      # vermelho/rosa (fundo)
+
+
 
 NORTH = (1, 0)
 EAST = (0, -1)
@@ -85,22 +91,32 @@ class Maze:
         next_cell.break_wall_from_cell(subtract_tuples(next_pos, curr_pos))
 
     def print_maze(self) -> None:
-        print("+" + "---+" * self.width)
+        print("\033[94m██" + "\033[94m█████\033[0m" * self.width)
         for row in self.grid:
-            row_raw = "|"
+            row_raw = "\033[94m██\033[0m"
             for cell in row:
-                if cell.east:
-                    row_raw += "   |"
-                else:
-                    row_raw += "    "
+                row_raw += "   \033[94m██" if cell.east else "     "
             print(row_raw)
-            row_bottom = "+"
+
+            row_bottom = "\033[94m██\033[0m"
             for cell in row:
-                if cell.south:
-                    row_bottom += "---+"
-                else:
-                    row_bottom += "   +"
+                row_bottom += "\033[94m█████" if cell.south else "   \033[94m██"
             print(row_bottom)
+
+"""
+    def print_maze(self) -> None:
+        print("\033[94m██" + "\033[94m████\033[0m" * self.width)
+        for row in self.grid:
+            row_raw = "\033[94m██\033[0m"
+            for cell in row:
+                row_raw += "  \033[94m██" if cell.east else "    "
+            print(row_raw)
+
+            row_bottom = "██\033[0m"
+            for cell in row:
+                row_bottom += "\033[94m████" if cell.south else "  \033[94m██"
+            print(row_bottom)
+"""
 
 
 def main2() -> None:
