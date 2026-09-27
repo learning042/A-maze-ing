@@ -1,6 +1,7 @@
 from cell import Cell
 from tuple_op import sum_tuples, subtract_tuples
 from typing import IO
+from render import colorize_string
 import sys
 from contextlib import nullcontext
 
@@ -90,33 +91,38 @@ class Maze:
         curr_cell.break_wall_from_cell(subtract_tuples(curr_pos, next_pos))
         next_cell.break_wall_from_cell(subtract_tuples(next_pos, curr_pos))
 
-    def print_maze(self) -> None:
-        print("\033[94m██" + "\033[94m█████\033[0m" * self.width)
+    def get_graphical_view(self) -> str:
+        maze_representation = "██" + "█████" * self.width + "\n"
         for row in self.grid:
-            row_raw = "\033[94m██\033[0m"
+            row_raw = f"██"
             for cell in row:
-                row_raw += "   \033[94m██" if cell.east else "     "
-            print(row_raw)
+                row_raw += f"   ██" if cell.east else "     "
+            maze_representation += row_raw + "\n"
 
-            row_bottom = "\033[94m██\033[0m"
+            row_bottom = f"██"
             for cell in row:
-                row_bottom += "\033[94m█████" if cell.south else "   \033[94m██"
-            print(row_bottom)
+                row_bottom += f"█████" if cell.south else f"   ██"
+            maze_representation += row_bottom + "\n"
+        return maze_representation
 
-"""
-    def print_maze(self) -> None:
-        print("\033[94m██" + "\033[94m████\033[0m" * self.width)
-        for row in self.grid:
-            row_raw = "\033[94m██\033[0m"
-            for cell in row:
-                row_raw += "  \033[94m██" if cell.east else "    "
-            print(row_raw)
-
-            row_bottom = "██\033[0m"
-            for cell in row:
-                row_bottom += "\033[94m████" if cell.south else "  \033[94m██"
-            print(row_bottom)
-"""
+    def add_42icon(self) -> None:
+        icon = [
+                "###     #######",
+                "###     #######",
+                "###     #######",
+                "###         ###",
+                "####### #######",
+                "####### #######",
+                "####### #######",
+                "    ### ###    ",
+                "    ### #######",
+                "    ### #######",
+                "    ### #######"
+                ]
+        for row in range(self.height // 2 - 5, self.height // 2 + 6):
+            for column in range(self.width // 2 - 7, self.width // 2 + 8):
+                if icon[row - self.height // 2 + 5][column - self.width // 2 + 7] == "#":
+                    self.get_cell(row, column).is_42 = True
 
 
 def main2() -> None:

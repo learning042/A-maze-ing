@@ -10,8 +10,10 @@ class MazeGenerator(ABC):
 
 
 class DFSGenerator(MazeGenerator):
-    def generator(self, width: int, height: int, start: tuple[int, int] = (0, 0)) -> Maze:
+    def generator(self, width: int, height: int, start: tuple[int, int] = (0, 0), has_42: bool = True) -> Maze:
         maze = Maze(width, height, start)
+        if has_42:
+            maze.add_42icon()
         stack = [maze.get_cell(*start)]
         while stack:
             current = stack[-1]
