@@ -119,10 +119,10 @@ class Maze:
                 "    ### #######",
                 "    ### #######"
                 ]
-        for row in range(self.height // 2 - 5, self.height // 2 + 6):
-            for column in range(self.width // 2 - 7, self.width // 2 + 8):
-                if icon[row - self.height // 2 + 5][column - self.width // 2 + 7] == "#":
-                    self.get_cell(row, column).is_42 = True
+        for row in range(11):
+            for column in range(15):
+                if icon[row][column] == "#":
+                    self.get_cell(row + self.height // 2 - 5, column + self.width // 2 - 7).is_42 = True
 
 
 def main2() -> None:
