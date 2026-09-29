@@ -96,7 +96,10 @@ class Maze:
         for row in self.grid:
             row_raw = f"██"
             for cell in row:
-                row_raw += f"   ██" if cell.east else "     "
+                if cell.is_42:
+                    row_raw += f"█████"
+                else:
+                    row_raw += f"   ██" if cell.east else "     "
             maze_representation += row_raw + "\n"
 
             row_bottom = f"██"
