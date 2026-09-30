@@ -44,6 +44,7 @@ class Cell:
         self.west = True
         self.visited = False
         self.is_42 = False
+        self.parent: None | Cell = None
 
     def position(self) -> tuple[int, int]:
         return (self.row, self.col)

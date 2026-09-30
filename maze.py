@@ -20,7 +20,7 @@ WEST = (0, 1)
 
 class Maze:
     """Defines the maze"""
-    def __init__(self, width: int, height: int, start: tuple[int, int] = (0, 0)) -> None:
+    def __init__(self, width: int, height: int, end: tuple[int, int], start: tuple[int, int] = (0, 0)) -> None:
         """
         Instantiate a new maze.
 
@@ -37,6 +37,7 @@ class Maze:
                      for row in range(height)
                      ]
         self.start = start
+        self.end = end
         self.mark_visited(*self.start)
 
     def show(
@@ -126,6 +127,11 @@ class Maze:
             for column in range(15):
                 if icon[row][column] == "#":
                     self.get_cell(row + self.height // 2 - 5, column + self.width // 2 - 7).is_42 = True
+
+    def turn_all_cells_unvisited(self) -> None:
+        for row in self.grid:
+            for cell in row:
+                cell.visited = False
 
 
 def main2() -> None:
