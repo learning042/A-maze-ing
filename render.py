@@ -23,6 +23,8 @@ def render_maze(
     for char in maze_representation:
         if char == " ":
             result += colorize_string(char, red_floor, green_floor, blue_floor, True)
+        elif char == "#":
+            result += colorize_string("█", red_wall - 20, green_floor - 20, blue_floor - 20)
         else:
             result += colorize_string(char, red_wall, green_wall, blue_wall)
     return result

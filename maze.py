@@ -12,11 +12,17 @@ END_COLOR = "\033[48;2;220;60;90m"      # vermelho/rosa (fundo)
 
 
 
-NORTH = (1, 0)
-EAST = (0, -1)
-SOUTH = (-1, 0)
-WEST = (0, 1)
+NORTH = (-1, 0)
+EAST = (0, 1)
+SOUTH = (1, 0)
+WEST = (0, -1)
 
+DIRECTIONS = {
+        "north": NORTH,
+        "east": EAST,
+        "south": SOUTH,
+        "west": WEST
+}
 
 class Maze:
     """Defines the maze"""
@@ -83,50 +89,75 @@ class Maze:
                 not_visited.append(cell)
         return not_visited
 
+    def return_available_moves(self, cell: Cell) -> list[Cell]:
+        position = cell.position()
+        not_visited: list[Cell] = []
+        for direction in (NORTH, EAST, SOUTH, WEST):
+            cell_position = sum_tuples(position, direction)
+            if cell_position[0] < 0 or cell_position[1] < 0:
+                continue
+            try:
+                neighbor = self.grid[cell_position[0]][cell_position[1]]
+            except IndexError:
+                continue
+            key = next(k for k in DIRECTIONS.keys() if DIRECTIONS[k] == direction) 
+            if not neighbor.visited and not neighbor.is_42 and not getattr(cell, key):
+                not_visited.append(neighbor)
+        return not_visited
+
+
     def get_cell(self, row: int, column: int) -> Cell:
         return self.grid[row][column]
 
     def break_wall(self, curr_cell: Cell, next_cell: Cell) -> None:
         curr_pos = curr_cell.position()
         next_pos = next_cell.position()
-        curr_cell.break_wall_from_cell(subtract_tuples(curr_pos, next_pos))
-        next_cell.break_wall_from_cell(subtract_tuples(next_pos, curr_pos))
+        curr_cell.break_wall_from_cell(subtract_tuples(next_pos, curr_pos))
+        next_cell.break_wall_from_cell(subtract_tuples(curr_pos, next_pos))
 
     def get_graphical_view(self) -> str:
         maze_representation = "██" + "█████" * self.width + "\n"
         for row in self.grid:
             row_raw = f"██"
             for cell in row:
+                position = cell.position()
                 if cell.is_42:
-                    row_raw += f"█████"
+                    row_raw += f"#####"
                 else:
-                    row_raw += f"   ██" if cell.east else "     "
+                    if cell.east:
+                        row_raw += f"   ██"
+                    elif self.get_cell(position[0], position[1] + 1).is_42:
+                        row_raw += f"   ##"
+                    else:
+                        row_raw += "     "
             maze_representation += row_raw + "\n"
 
             row_bottom = f"██"
             for cell in row:
-                row_bottom += f"█████" if cell.south else f"   ██"
+                if cell.south:
+                    if cell.is_42:
+                        row_bottom += f"#####"
+                    else:
+                        row_bottom += f"█████"
+                elif self.get_cell(position[0] + 1, position[1]).is_42:
+                    row_bottom += f"#####"
+                else:
+                    row_bottom += f"   ██"
             maze_representation += row_bottom + "\n"
         return maze_representation
 
     def add_42icon(self) -> None:
         icon = [
-                "###     #######",
-                "###     #######",
-                "###     #######",
-                "###         ###",
-                "####### #######",
-                "####### #######",
-                "####### #######",
-                "    ### ###    ",
-                "    ### #######",
-                "    ### #######",
-                "    ### #######"
+                "#   ###",
+                "#     #",
+                "### ###",
+                "  # #  ",
+                "  # ###",
                 ]
-        for row in range(11):
-            for column in range(15):
+        for row in range(5):
+            for column in range(7):
                 if icon[row][column] == "#":
-                    self.get_cell(row + self.height // 2 - 5, column + self.width // 2 - 7).is_42 = True
+                    self.get_cell(row + self.height // 2 - 3, column + self.width // 2 - 3).is_42 = True
 
     def turn_all_cells_unvisited(self) -> None:
         for row in self.grid:

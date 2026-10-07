@@ -14,7 +14,7 @@ def solve_maze(maze: Maze) -> Cell | None:
         current = queue.pop(0)
         if current == end:
             return current
-        neighbors = maze.return_available_neighbors(current)
+        neighbors = maze.return_available_moves(current)
         for neighbor in neighbors:
             neighbor.mark_visited()
             neighbor.parent = current
