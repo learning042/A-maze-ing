@@ -26,7 +26,7 @@ def parse_config(config: dict[str, str]) -> dict[str, str | bool | int | tuple[i
     for key in config.keys():
         if key == "OUTPUT_FILE":
             continue
-        elif key == "PERFECT"
+        elif key == "PERFECT":
             if config[key].title() not in ("True", "False"):
                 raise ValueError("PERFECT should be either 'True' or 'False'")
             else:
@@ -47,11 +47,9 @@ def parse_config(config: dict[str, str]) -> dict[str, str | bool | int | tuple[i
 
 
 def check_config(config: dict[str, str]) -> None:
-    if len(config) != 7:
-        raise ValueError(
-            "Invalid dictionary size.",
-            " It must have something extra or something missing."
-            )
+    REQUIRED_KEYS = ["WIDTH", "HEIGHT", "ENTRY", "EXIT", "OUTPUT_FILE", "PERFECT", "SEED"]
+    if any(key for key in REQUIRED_KEYS if key not in config):
+        raise ValueError("Invalid config")
 
 
 def build_config_dict() -> dict[str, str | bool | int | tuple[int, int]]:
