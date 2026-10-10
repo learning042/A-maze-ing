@@ -15,6 +15,8 @@ def main() -> None:
     except Exception as error:
         print(error)
         sys.exit(1)
+    if maze is None:
+        return
     view = maze.get_graphical_view()
     print(render_maze(view, 0, 50, 255, 200, 200, 50))
     print(f"End: {maze.end}")

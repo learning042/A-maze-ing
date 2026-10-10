@@ -32,7 +32,9 @@ class DFSGenerator(MazeGenerator):
         return maze
         
         
-    def creator(self, width: int, height: int, end: tuple[int, int], start: tuple[int, int] = (0, 0), has_42: bool = True) -> Maze:
+    def creator(self, width: int, height: int, end: tuple[int, int], start: tuple[int, int] = (0, 0), has_42: bool = True) -> Maze | None:
+        if width == 0 and height == 0:
+            return
         maze = Maze(width, height, end, start)
         if has_42:
             if width < 9 or height < 6:

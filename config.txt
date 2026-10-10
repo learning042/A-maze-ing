@@ -1,6 +1,6 @@
 # Maze size
-WIDTH=10
-HEIGHT=10
+WIDTH=0
+HEIGHT=0
 
 # Entry and exit
 ENTRY=0,0
