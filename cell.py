@@ -1,4 +1,3 @@
-
 NORTH = (-1, 0)
 EAST = (0, 1)
 SOUTH = (1, 0)
@@ -58,3 +57,6 @@ class Cell:
 
     def mark_visited(self) -> None:
         self.visited = True
+
+    def is_deadend(self) -> bool:
+        return self.north + self.east + self.south + self.west > 2

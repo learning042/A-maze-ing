@@ -10,6 +10,7 @@ def is_readable_line(line: str) -> bool:
         return False
     return True
 
+
 # talvez trocar isso para dar uma lista de duplicatas
 def find_duplicate(keys: list[str]) -> str | None:
     seen = set()

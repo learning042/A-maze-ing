@@ -4,11 +4,12 @@ def colorize_string(
         green: int,
         blue: int,
         is_background: bool = False
-	) -> None:
+        ) -> str:
     red = red % 256
     green = green % 256
     blue = blue % 256
     return f"\033[{38 + is_background * 10};2;{red};{green};{blue}m{text}\033[0m"
+
 
 def render_maze(
         maze_representation: str,
@@ -18,7 +19,7 @@ def render_maze(
         red_floor: int,
         green_floor: int,
         blue_floor: int
-	) -> str:
+        ) -> str:
     result = ""
     for char in maze_representation:
         if char == " ":

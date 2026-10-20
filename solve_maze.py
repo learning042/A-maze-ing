@@ -1,6 +1,7 @@
 from maze import Maze
 from cell import Cell
 
+
 def solve_maze(maze: Maze) -> Cell | None:
     #1- SAVE current -> queue
     #2- TAKE the first and EXPLORE the neighbors
@@ -20,4 +21,3 @@ def solve_maze(maze: Maze) -> Cell | None:
             neighbor.parent = current
             queue.append(neighbor)
     return None
-        

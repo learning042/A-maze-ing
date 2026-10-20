@@ -2,6 +2,7 @@ from cell import Cell
 from tuple_op import sum_tuples, subtract_tuples
 from typing import IO
 from render import colorize_string
+import random
 import sys
 from contextlib import nullcontext
 
@@ -9,7 +10,6 @@ RESET = "\033[0m"
 WALL_COLOR = "\033[38;2;200;200;220m"   # cinza claro / lavanda
 START_COLOR = "\033[48;2;170;80;220m"   # roxo (fundo)
 END_COLOR = "\033[48;2;220;60;90m"      # vermelho/rosa (fundo)
-
 
 
 NORTH = (-1, 0)
@@ -23,6 +23,7 @@ DIRECTIONS = {
         "south": SOUTH,
         "west": WEST
 }
+
 
 class Maze:
     """Defines the maze"""
@@ -105,7 +106,6 @@ class Maze:
                 not_visited.append(neighbor)
         return not_visited
 
-
     def get_cell(self, row: int, column: int) -> Cell:
         return self.grid[row][column]
 
@@ -118,31 +118,26 @@ class Maze:
     def get_graphical_view(self) -> str:
         maze_representation = "██" + "█████" * self.width + "\n"
         for row in self.grid:
-            row_raw = f"██"
+            row_raw = "██"
             for cell in row:
                 position = cell.position()
                 if cell.is_42:
-                    row_raw += f"#####"
+                    row_raw += "###██"
                 else:
                     if cell.east:
-                        row_raw += f"   ██"
+                        row_raw += "   ██"
                     elif self.get_cell(position[0], position[1] + 1).is_42:
-                        row_raw += f"   ##"
+                        row_raw += "   ##"
                     else:
                         row_raw += "     "
             maze_representation += row_raw + "\n"
 
-            row_bottom = f"██"
+            row_bottom = "██"
             for cell in row:
                 if cell.south:
-                    if cell.is_42:
-                        row_bottom += f"#####"
-                    else:
-                        row_bottom += f"█████"
-                elif self.get_cell(position[0] + 1, position[1]).is_42:
-                    row_bottom += f"#####"
+                    row_bottom += "█████"
                 else:
-                    row_bottom += f"   ██"
+                    row_bottom += "   ██"
             maze_representation += row_bottom + "\n"
         return maze_representation
 
@@ -157,12 +152,47 @@ class Maze:
         for row in range(5):
             for column in range(7):
                 if icon[row][column] == "#":
-                    self.get_cell(row + self.height // 2 - 3, column + self.width // 2 - 3).is_42 = True
+                    self.get_cell(row + self.height // 2 - 3,
+                                  column + self.width // 2 - 3).is_42 = True
 
     def turn_all_cells_unvisited(self) -> None:
         for row in self.grid:
             for cell in row:
                 cell.visited = False
+
+    def pacman(self) -> None:
+        grid = self.grid
+        for row in grid:
+            for curr_cell in row:
+                if curr_cell.is_deadend() and not curr_cell.is_42:
+                    neighbors = self.get_deadend_pos(curr_cell)
+                try:
+                    next_cell = random.choice(neighbors)
+                    self.break_wall(curr_cell, next_cell)
+                except IndexError:
+                    continue
+                except StopIteration:
+                    continue
+                    
+
+    def get_deadend_pos(self, cell: Cell) -> list[Cell]:
+        position = cell.position()
+        deadends: list[Cell] = []
+        for direction in DIRECTIONS.keys():
+            cell_position = sum_tuples(position, DIRECTIONS[direction])
+            if cell_position[0] < 0 or cell_position[1] < 0:
+                continue
+            try:
+                adj_cell = self.get_cell(*cell_position)
+            except IndexError:
+                continue
+            if getattr(cell, direction) and not adj_cell.is_42:
+                deadends.append(adj_cell)
+        return deadends
+
+
+
+
 
 
 def main2() -> None:
@@ -178,7 +208,7 @@ def main2() -> None:
 
 def main() -> None:
     from maze_gen import DFSGenerator
-    gen = DFSGenerator()
+    gen = DFSGenerator()#####
     maze = gen.generator(10, 10)
     maze.print_maze()
 
