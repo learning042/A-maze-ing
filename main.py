@@ -27,11 +27,11 @@ def main() -> None:
 
 def main2() -> None:
     gen = DFSGenerator()
-    maze = gen.creator(17, 16, (9, 9))
+    maze = gen.creator(10, 10, (9, 9))
     maze.show("hex", "output.txt")
     view = maze.get_graphical_view()
-    #print(render_maze(view, 0, 50, 255, 200, 200, 50))
-    print(view)
+    print(render_maze(view, 0, 50, 255, 200, 200, 50))
+    #print(view)
     #print(f"End: {maze.end}")
     #currently = solve_maze(maze)
     #print(f"currently: {currently.position()}")
@@ -41,9 +41,13 @@ def main2() -> None:
     #maze = Maze(20, 20, (0, 0))
     #print(maze.get_graphical_view())
     maze.pacman()
-    maze.show("hex", "pacman.txt")
+    maze.pacman2()
+    maze.pacman3()
     view = maze.get_graphical_view()
-    print(view)
+
+    print(render_maze(view, 0, 50, 255, 200, 200, 50))
+
+    maze.show("hex", "pacman.txt")
 
 
 if __name__ == "__main__":

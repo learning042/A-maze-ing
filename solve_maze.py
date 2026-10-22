@@ -1,8 +1,8 @@
 from maze import Maze
-from cell import Cell
+from cell import Cell, DIRECTIONS
+from tuple_op import subtract_tuples
 
-
-def solve_maze(maze: Maze) -> Cell | None:
+def solve_maze(maze: Maze) -> str:
     #1- SAVE current -> queue
     #2- TAKE the first and EXPLORE the neighbors
     #3- SAVE
@@ -14,10 +14,17 @@ def solve_maze(maze: Maze) -> Cell | None:
     while queue:
         current = queue.pop(0)
         if current == end:
-            return current
+            break
         neighbors = maze.return_available_moves(current)
         for neighbor in neighbors:
             neighbor.mark_visited()
             neighbor.parent = current
             queue.append(neighbor)
-    return None
+    path = ""
+    curr = end
+    while curr.parent is not None:
+        path += (next(k[0].capitalize() for k in DIRECTIONS.keys() if DIRECTIONS[k] == subtract_tuples(curr.position(), curr.parent.position())))
+        curr = curr.parent
+    path = path[::-1]
+    maze.turn_all_cells_unvisited()
+    return path

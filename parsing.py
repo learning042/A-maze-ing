@@ -22,7 +22,8 @@ def find_duplicate(keys: list[str]) -> str | None:
     return None
 
 
-def parse_config(config: dict[str, str]) -> dict[str, str | bool | int | tuple[int, int]]:
+def parse_config(config: dict[str, str]
+                 ) -> dict[str, str | bool | int | tuple[int, int]]:
     built_config = {}
     for key in config.keys():
         if key == "OUTPUT_FILE":

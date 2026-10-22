@@ -12,7 +12,8 @@ def subtract_tuples(p1: tuple[int, int],
     return (p1[0] - p2[0], p1[1] - p2[1])
 
 
-def calculate_distance(p1: tuple[int, int], p2: tuple[int, int] = (0, 0)) -> float:
+def calculate_distance(p1: tuple[int, int],
+                       p2: tuple[int, int] = (0, 0)) -> float:
     """
     Calculate the distance between two points. 
     If p2 is not specified It is considered

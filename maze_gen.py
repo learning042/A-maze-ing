@@ -5,6 +5,7 @@ from cell import Cell
 import random
 import time
 import os
+import subprocess
 import sys
 
 
@@ -40,7 +41,7 @@ class DFSGenerator(MazeGenerator):
             else:
                 next = random.choice(neighbors)
                 next.mark_visited()
-                maze.break_wall(current, next)
+                maze.edit_wall(current, next, False)
                 stack.append(next)
             yield maze
         return maze
@@ -65,9 +66,9 @@ class DFSGenerator(MazeGenerator):
         for snapshot in self.generator(maze, stack):
             frame = snapshot.get_graphical_view().replace("\n", "\n\r")
             print("\033[H" + frame)
-            time.sleep(0.01)
+            time.sleep(0.001)
         print("\033[?25h\n")
-        os.system("cls" if os.name == "nt" else "clear")
+        subprocess.run(["cls" if os.name == "nt" else "clear"])
         print(width)
         print(height)
         maze.turn_all_cells_unvisited()

@@ -27,7 +27,12 @@ DIRECTIONS = {
 
 class Maze:
     """Defines the maze"""
-    def __init__(self, width: int, height: int, end: tuple[int, int], start: tuple[int, int] = (0, 0)) -> None:
+    def __init__(self,
+                 width: int,
+                 height: int,
+                 end: tuple[int, int],
+                 start: tuple[int, int] = (0, 0)
+                 ) -> None:
         """
         Instantiate a new maze.
 
@@ -54,6 +59,8 @@ class Maze:
         clear: bool = False,
         append: bool = False
      ) -> None:
+        
+        from solve_maze import solve_maze
         mode = "a" if append else "w"
         context: IO[str] | nullcontext = nullcontext(sys.stdout)
         if filename != "sys.stdout":
@@ -69,6 +76,9 @@ class Maze:
                         value = value()
                     print(value, file=f, end="")
                 print(file=f)
+            print(f"\n{self.start[0]},{self.start[1]}", file=f)
+            print(f"{self.end[0]},{self.end[1]}", file=f)
+            print(solve_maze(self), file=f)
 
     def mark_visited(self, row: int, column: int) -> None:
         cell = self.grid[row][column]
@@ -101,19 +111,21 @@ class Maze:
                 neighbor = self.grid[cell_position[0]][cell_position[1]]
             except IndexError:
                 continue
-            key = next(k for k in DIRECTIONS.keys() if DIRECTIONS[k] == direction) 
-            if not neighbor.visited and not neighbor.is_42 and not getattr(cell, key):
+            key = next(k for k in DIRECTIONS.keys() if DIRECTIONS[k] == direction)
+            if (not neighbor.visited and
+                    not neighbor.is_42 and
+                    not getattr(cell, key)):
                 not_visited.append(neighbor)
         return not_visited
 
     def get_cell(self, row: int, column: int) -> Cell:
         return self.grid[row][column]
 
-    def break_wall(self, curr_cell: Cell, next_cell: Cell) -> None:
+    def edit_wall(self, curr_cell: Cell, next_cell: Cell, state: bool) -> None:
         curr_pos = curr_cell.position()
         next_pos = next_cell.position()
-        curr_cell.break_wall_from_cell(subtract_tuples(next_pos, curr_pos))
-        next_cell.break_wall_from_cell(subtract_tuples(curr_pos, next_pos))
+        curr_cell.edit_wall_from_cell(subtract_tuples(next_pos, curr_pos), state)
+        next_cell.edit_wall_from_cell(subtract_tuples(curr_pos, next_pos), state)
 
     def get_graphical_view(self) -> str:
         maze_representation = "██" + "█████" * self.width + "\n"
@@ -137,7 +149,17 @@ class Maze:
                 if cell.south:
                     row_bottom += "█████"
                 else:
-                    row_bottom += "   ██"
+                    position = cell.position()
+                    try:
+                        if (cell.east or
+                                cell.south or
+                                self.get_cell(position[0] + 1, position[1]).east or
+                                self.get_cell(position[0], position[1] + 1).south):
+                            row_bottom += "   ██"
+                        else:
+                            row_bottom += "     "
+                    except IndexError:
+                        row_bottom += "   ██"
             maze_representation += row_bottom + "\n"
         return maze_representation
 
@@ -152,7 +174,7 @@ class Maze:
         for row in range(5):
             for column in range(7):
                 if icon[row][column] == "#":
-                    self.get_cell(row + self.height // 2 - 3,
+                    self.get_cell(row + self.height // 2 - 2,
                                   column + self.width // 2 - 3).is_42 = True
 
     def turn_all_cells_unvisited(self) -> None:
@@ -165,15 +187,51 @@ class Maze:
         for row in grid:
             for curr_cell in row:
                 if curr_cell.is_deadend() and not curr_cell.is_42:
-                    neighbors = self.get_deadend_pos(curr_cell)
+                    try:
+                        neighbors = self.get_deadend_pos(curr_cell)
+                        next_cell = random.choice(neighbors)
+                        self.edit_wall(curr_cell, next_cell, False)
+                    except IndexError:
+                        continue
+                    except StopIteration:
+                        continue
+
+    def pacman2(self) -> None:
+        for i in range(self.height):
+            for j in range(self.width):
+                horizontal = 0
                 try:
-                    next_cell = random.choice(neighbors)
-                    self.break_wall(curr_cell, next_cell)
+                    while (not self.get_cell(i, j + horizontal).east and
+                           not self.get_cell(i, j + horizontal).south and
+                           not self.get_cell(i + 1, j + horizontal).east and
+                           not self.get_cell(i, j + horizontal + 1).south):
+                        horizontal += 1
                 except IndexError:
-                    continue
-                except StopIteration:
-                    continue
-                    
+                    break
+                if horizontal > 1:
+                    for k in range(1, horizontal):
+                        self.edit_wall(self.get_cell(i, j + k),
+                                       self.get_cell(i + 1, j + k),
+                                       True)
+
+    def pacman3(self) -> None:
+        for j in range(self.width):
+            for i in range(self.height):
+                vertical = 0
+                try:
+                    while (not self.get_cell(i + vertical, j).east and
+                           not self.get_cell(i + vertical, j).south and
+                           not self.get_cell(i + vertical, j + 1).south and
+                           not self.get_cell(i + vertical + 1, j).east):
+                        vertical += 1
+                except IndexError:
+                    break
+                if vertical > 1:
+                    for k in range(1, vertical):
+                        self.edit_wall(self.get_cell(i + k, j),
+                                       self.get_cell(i + k, j + 1),
+                                       True)
+
 
     def get_deadend_pos(self, cell: Cell) -> list[Cell]:
         position = cell.position()
@@ -196,15 +254,34 @@ class Maze:
 
 
 def main2() -> None:
-    maze = Maze(5, 5)
-    maze.print_maze()
+    maze = Maze(5, 5, (4, 4))
+    #maze.print_maze()
     print()
-    curr = maze.get_cell(3, 4)
-    next = maze.get_cell(3, 3)
-    maze.break_wall(curr, next)
-    print(curr.east)
-    maze.print_maze()
+    #curr = maze.get_cell(3, 4)
+    #next = maze.get_cell(3, 3)
+    #maze.edit_wall(curr, next, False)
 
+    maze.edit_wall(maze.get_cell(0, 0), maze.get_cell(0, 1), False)
+    maze.edit_wall(maze.get_cell(0, 0), maze.get_cell(1, 0), False)
+    maze.edit_wall(maze.get_cell(0, 1), maze.get_cell(1, 1), False)
+    maze.edit_wall(maze.get_cell(1, 0), maze.get_cell(1, 1), False)
+    #maze.edit_wall(maze.get_cell(0, 1), maze.get_cell(0, 2), False)
+    #maze.edit_wall(maze.get_cell(1, 1), maze.get_cell(1, 2), False)
+    #maze.edit_wall(maze.get_cell(0, 2), maze.get_cell(1, 2), False)
+
+    maze.edit_wall(maze.get_cell(1, 0), maze.get_cell(2, 0), False)
+    maze.edit_wall(maze.get_cell(1, 1), maze.get_cell(2, 1), False)
+    maze.edit_wall(maze.get_cell(2, 0), maze.get_cell(2, 1), False)
+
+    view = maze.get_graphical_view()
+    print(view)
+    maze.pacman3()
+    view = maze.get_graphical_view()
+    print(view)
+
+    #maze.edit_wall(curr, next, True)
+    #view = maze.get_graphical_view()
+    #print(view)
 
 def main() -> None:
     from maze_gen import DFSGenerator
@@ -214,4 +291,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    main2()
