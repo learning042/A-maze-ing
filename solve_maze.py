@@ -7,6 +7,7 @@ def solve_maze(maze: Maze) -> str:
     #2- TAKE the first and EXPLORE the neighbors
     #3- SAVE
     #4- Repeat the process for each way
+    maze.reset_path()
     start = maze.get_cell(*maze.start)
     end = maze.get_cell(*maze.end)
     start.mark_visited()
@@ -23,6 +24,7 @@ def solve_maze(maze: Maze) -> str:
     path = ""
     curr = end
     while curr.parent is not None:
+        curr.in_path = True
         path += (next(k[0].capitalize() for k in DIRECTIONS.keys() if DIRECTIONS[k] == subtract_tuples(curr.position(), curr.parent.position())))
         curr = curr.parent
     path = path[::-1]

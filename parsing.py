@@ -27,12 +27,12 @@ def parse_config(config: dict[str, str]
     built_config = {}
     for key in config.keys():
         if key == "OUTPUT_FILE":
-            continue
+            built_config[key] = config[key]
         elif key == "PERFECT":
             if config[key].title() not in ("True", "False"):
                 raise ValueError("PERFECT should be either 'True' or 'False'")
             else:
-                built_config[key] = bool(config[key])
+                built_config[key] = eval(config[key])
         elif key in ("WIDTH", "HEIGHT", "SEED"):
             built_config[key] = int(config[key])
         elif key in ("ENTRY", "EXIT"):
@@ -49,23 +49,22 @@ def parse_config(config: dict[str, str]
 
 
 def check_config(config: dict[str, str]) -> None:
-    REQUIRED_KEYS = ["WIDTH", "HEIGHT", "ENTRY", "EXIT", "OUTPUT_FILE", "PERFECT", "SEED"]
+    REQUIRED_KEYS = ["WIDTH", "HEIGHT", "ENTRY", "EXIT", "OUTPUT_FILE", "PERFECT"]
     if any(key for key in REQUIRED_KEYS if key not in config):
         raise ValueError("Invalid config")
 
 
-def build_config_dict() -> dict[str, str | bool | int | tuple[int, int]]:
-    with open("config.txt", "r") as file:
+def build_config_dict(config_file: str) -> dict[str, str | bool | int | tuple[int, int]]:
+    with open(config_file, "r") as file:
         buffer = [line for line in file.read().split("\n") if is_readable_line(line)]
     keys = [key.split("=")[0] for key in buffer]
     values = [value.split("=")[1] for value in buffer]
     duplicate = find_duplicate(keys)
     if duplicate is not None:
-        raise Exception(f"Duplicated key {duplicate} in file 'config.txt'")
+        raise Exception(f"Duplicated key {duplicate} in file '{config_file}'")
     config = {key: value for (key, value) in zip(keys, values)}
     check_config(config)
-    built_config = parse_config(config)
-    return built_config
+    return parse_config(config)
 
 
 if __name__ == "__main__":

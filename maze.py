@@ -136,12 +136,16 @@ class Maze:
                 if cell.is_42:
                     row_raw += "###██"
                 else:
-                    if cell.east:
-                        row_raw += "   ██"
-                    elif self.get_cell(position[0], position[1] + 1).is_42:
-                        row_raw += "   ##"
+                    if cell.in_path:
+                        row_raw += "---"
                     else:
-                        row_raw += "     "
+                        row_raw += "   "
+                    if cell.east:
+                        row_raw += "██"
+                    elif cell.in_path and self.get_cell(position[0], position[1] + 1).in_path:
+                        row_raw += "--"
+                    else:
+                        row_raw += "  "
             maze_representation += row_raw + "\n"
 
             row_bottom = "██"
@@ -150,16 +154,18 @@ class Maze:
                     row_bottom += "█████"
                 else:
                     position = cell.position()
-                    try:
-                        if (cell.east or
-                                cell.south or
-                                self.get_cell(position[0] + 1, position[1]).east or
-                                self.get_cell(position[0], position[1] + 1).south):
-                            row_bottom += "   ██"
-                        else:
-                            row_bottom += "     "
-                    except IndexError:
-                        row_bottom += "   ██"
+                    if (cell.in_path and self.get_cell(position[0] + 1, position[1]).in_path):
+                        row_bottom += "---"
+                    else:
+                        row_bottom += "   "
+                    if (cell.east or
+                            cell.south or
+                            self.get_cell(position[0] + 1, position[1]).east or
+                            self.get_cell(position[0], position[1] + 1).south):
+                        row_bottom += "██"
+                    else:
+                        row_bottom += "  "
+    
             maze_representation += row_bottom + "\n"
         return maze_representation
 
@@ -182,7 +188,48 @@ class Maze:
             for cell in row:
                 cell.visited = False
 
+    def reset_path(self) -> None:
+        for row in self.grid:
+            for cell in row:
+                cell.in_path = False
+
     def pacman(self) -> None:
+        def fill_horizontal_hole(maze: Maze) -> None:
+            for i in range(maze.height):
+                for j in range(maze.width):
+                    horizontal = 0
+                    try:
+                        while (not maze.get_cell(i, j + horizontal).east and
+                               not maze.get_cell(i, j + horizontal).south and
+                               not maze.get_cell(i + 1, j + horizontal).east and
+                               not maze.get_cell(i, j + horizontal + 1).south):
+                            horizontal += 1
+                    except IndexError:
+                        break
+                    if horizontal > 1:
+                        for k in range(1, horizontal):
+                            maze.edit_wall(maze.get_cell(i, j + k),
+                                           maze.get_cell(i + 1, j + k),
+                                           True)
+
+        def fill_vertical_hole(maze: Maze) -> None:
+            for j in range(maze.width):
+                for i in range(maze.height):
+                    vertical = 0
+                    try:
+                        while (not maze.get_cell(i + vertical, j).east and
+                               not maze.get_cell(i + vertical, j).south and
+                               not maze.get_cell(i + vertical, j + 1).south and
+                               not maze.get_cell(i + vertical + 1, j).east):
+                            vertical += 1
+                    except IndexError:
+                        break
+                    if vertical > 1:
+                        for k in range(1, vertical):
+                            self.edit_wall(maze.get_cell(i + k, j),
+                                           maze.get_cell(i + k, j + 1),
+                                           True)
+
         grid = self.grid
         for row in grid:
             for curr_cell in row:
@@ -195,42 +242,9 @@ class Maze:
                         continue
                     except StopIteration:
                         continue
+        fill_horizontal_hole(self)
+        fill_vertical_hole(self)
 
-    def pacman2(self) -> None:
-        for i in range(self.height):
-            for j in range(self.width):
-                horizontal = 0
-                try:
-                    while (not self.get_cell(i, j + horizontal).east and
-                           not self.get_cell(i, j + horizontal).south and
-                           not self.get_cell(i + 1, j + horizontal).east and
-                           not self.get_cell(i, j + horizontal + 1).south):
-                        horizontal += 1
-                except IndexError:
-                    break
-                if horizontal > 1:
-                    for k in range(1, horizontal):
-                        self.edit_wall(self.get_cell(i, j + k),
-                                       self.get_cell(i + 1, j + k),
-                                       True)
-
-    def pacman3(self) -> None:
-        for j in range(self.width):
-            for i in range(self.height):
-                vertical = 0
-                try:
-                    while (not self.get_cell(i + vertical, j).east and
-                           not self.get_cell(i + vertical, j).south and
-                           not self.get_cell(i + vertical, j + 1).south and
-                           not self.get_cell(i + vertical + 1, j).east):
-                        vertical += 1
-                except IndexError:
-                    break
-                if vertical > 1:
-                    for k in range(1, vertical):
-                        self.edit_wall(self.get_cell(i + k, j),
-                                       self.get_cell(i + k, j + 1),
-                                       True)
 
 
     def get_deadend_pos(self, cell: Cell) -> list[Cell]:
