@@ -4,7 +4,7 @@ HEIGHT=16
 
 # Entry and exit
 ENTRY=0,0
-EXIT=15,15
+EXIT=13,2
 
 # Output
 OUTPUT_FILE=maze.txt

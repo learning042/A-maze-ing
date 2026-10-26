@@ -51,7 +51,8 @@ class DFSGenerator(MazeGenerator):
                 height: int,
                 end: tuple[int, int],
                 start: tuple[int, int] = (0, 0),
-                has_42: bool = True
+                has_42: bool = True,
+                frame_duration: float = 0.001
                 ) -> Maze | None:
         if width == 0 and height == 0:
             return
@@ -66,7 +67,7 @@ class DFSGenerator(MazeGenerator):
         for snapshot in self.generator(maze, stack):
             frame = snapshot.get_graphical_view().replace("\n", "\n\r")
             print("\033[H" + frame)
-            time.sleep(0.001)
+            time.sleep(frame_duration)
         print("\033[?25h\n")
         subprocess.run(["cls" if os.name == "nt" else "clear"])
         print(width)

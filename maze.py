@@ -59,7 +59,7 @@ class Maze:
         clear: bool = False,
         append: bool = False
      ) -> None:
-        
+
         from solve_maze import solve_maze
         mode = "a" if append else "w"
         context: IO[str] | nullcontext = nullcontext(sys.stdout)
@@ -129,6 +129,8 @@ class Maze:
 
     def get_graphical_view(self) -> str:
         maze_representation = "██" + "█████" * self.width + "\n"
+        start = self.get_cell(*self.start)
+        end = self.get_cell(*self.end)
         for row in self.grid:
             row_raw = "██"
             for cell in row:
@@ -136,13 +138,18 @@ class Maze:
                 if cell.is_42:
                     row_raw += "###██"
                 else:
-                    if cell.in_path:
+                    if cell is start:
+                        row_raw += "sss"
+                    elif cell is end:
+                        row_raw += "eee"
+                    elif cell.in_path:
                         row_raw += "---"
                     else:
                         row_raw += "   "
                     if cell.east:
                         row_raw += "██"
-                    elif cell.in_path and self.get_cell(position[0], position[1] + 1).in_path:
+                    elif (cell.in_path and
+                          self.get_cell(position[0], position[1] + 1).in_path):
                         row_raw += "--"
                     else:
                         row_raw += "  "
@@ -154,7 +161,9 @@ class Maze:
                     row_bottom += "█████"
                 else:
                     position = cell.position()
-                    if (cell.in_path and self.get_cell(position[0] + 1, position[1]).in_path):
+                    if (cell.in_path and
+                        self.get_cell(position[0] + 1,
+                                      position[1]).in_path):
                         row_bottom += "---"
                     else:
                         row_bottom += "   "
@@ -165,7 +174,7 @@ class Maze:
                         row_bottom += "██"
                     else:
                         row_bottom += "  "
-    
+
             maze_representation += row_bottom + "\n"
         return maze_representation
 
@@ -245,8 +254,6 @@ class Maze:
         fill_horizontal_hole(self)
         fill_vertical_hole(self)
 
-
-
     def get_deadend_pos(self, cell: Cell) -> list[Cell]:
         position = cell.position()
         deadends: list[Cell] = []
@@ -296,6 +303,7 @@ def main2() -> None:
     #maze.edit_wall(curr, next, True)
     #view = maze.get_graphical_view()
     #print(view)
+
 
 def main() -> None:
     from maze_gen import DFSGenerator

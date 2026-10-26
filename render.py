@@ -13,21 +13,24 @@ def colorize_string(
 
 def render_maze(
         maze_representation: str,
-        red_wall: int,
-        green_wall: int,
-        blue_wall: int,
-        red_floor: int,
-        green_floor: int,
-        blue_floor: int
+        rgb_wall: tuple[int, int, int],
+        rgb_floor: tuple[int, int, int],
+        show_maze: bool = False
         ) -> str:
     result = ""
+    red_wall, green_wall, blue_wall = rgb_wall
+    red_floor, green_floor, blue_floor = rgb_floor
     for char in maze_representation:
-        if char == " ":
-            result += colorize_string(char, red_floor, green_floor, blue_floor, True)
+        if char == " " or (char == "-" and not show_maze):
+            result += colorize_string(" ", red_floor, green_floor, blue_floor, True)
         elif char == "-":
             result += colorize_string("█", red_floor - 70, green_floor - 10, blue_floor - 50)
         elif char == "#":
             result += colorize_string("█", red_wall - 20, green_wall - 20, blue_wall - 20)
+        elif char == "s":
+            result += colorize_string(" ", red_floor - 30, green_floor + 30, blue_floor + 50, True)
+        elif char == "e":
+            result += colorize_string(" ", red_floor + 70, green_floor - 100, blue_floor - 30, True)
         else:
             result += colorize_string(char, red_wall, green_wall, blue_wall)
     return result

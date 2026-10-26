@@ -2,6 +2,7 @@ from maze import Maze
 from cell import Cell, DIRECTIONS
 from tuple_op import subtract_tuples
 
+
 def solve_maze(maze: Maze) -> str:
     #1- SAVE current -> queue
     #2- TAKE the first and EXPLORE the neighbors
@@ -23,10 +24,11 @@ def solve_maze(maze: Maze) -> str:
             queue.append(neighbor)
     path = ""
     curr = end
+    curr.in_path = True
     while curr.parent is not None:
-        curr.in_path = True
         path += (next(k[0].capitalize() for k in DIRECTIONS.keys() if DIRECTIONS[k] == subtract_tuples(curr.position(), curr.parent.position())))
         curr = curr.parent
+        curr.in_path = True
     path = path[::-1]
     maze.turn_all_cells_unvisited()
     return path

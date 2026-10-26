@@ -9,7 +9,8 @@ import subprocess
 import sys
 
 
-def make_maze(config: dict[str, str | bool | int | tuple[int, int]], gen: MazeGenerator) -> Maze | None:
+def make_maze(config: dict[str, str | bool | int | tuple[int, int]],
+              gen: MazeGenerator) -> Maze | None:
     try:
         maze = gen.creator(config["WIDTH"], config["HEIGHT"], config["EXIT"], has_42=True)
         if not config["PERFECT"]:
@@ -23,7 +24,8 @@ def make_maze(config: dict[str, str | bool | int | tuple[int, int]], gen: MazeGe
 
 
 def main() -> None:
-    if len(sys.argv) > 2:
+    if len(sys.argv) != 2:
+        print("Usage: python main.py config.txt")
         sys.exit(1)
     try:
         config = build_config_dict(sys.argv[1])
@@ -36,28 +38,50 @@ def main() -> None:
     maze = make_maze(config, gen)
     maze.show("hex", config["OUTPUT_FILE"])
     done = False
+    show_path = False
+    rgb_wall = (0, 130, 170)
+    rgb_floor = (200, 200, 50)
     while not done:
         subprocess.run(["cls" if os.name == "nt" else "clear"])
         view = maze.get_graphical_view()
-        print(render_maze(view, 0, 50, 255, 200, 200, 50))
+        print(render_maze(view, rgb_wall, rgb_floor, show_path))
         #print(view)
         print("=== A-Maze-ing ===")
-        choice = input(
-            "1. Re-generate a new maze\n"
-            "2. Show / Hide the shortest path\n"
-            "3. Rotate the wall colours\n"
-            "4. Quit\n"
-            "Choice? (1-4): "
-        )
+        choice = 0
+        while (choice not in range(1, 5)):
+            try:
+                choice = int(input(
+                            "1. Re-generate a new maze\n"
+                            "2. Show / Hide the shortest path\n"
+                            "3. Change the wall colours\n"
+                            "4. Quit\n"
+                            "Choice? (1-4): "))
+            except ValueError:
+                continue
+            except (KeyboardInterrupt, EOFError):
+                choice = 4
+            finally:
+                sys.stdout.write("\033[8F\033[?25l")
+                sys.stdout.write("\033[0J\033[?25l")
+                print("\nInvalid choice\n")
         match choice:
-            case "1":
+            case 1:
                 maze = make_maze(config, gen)
                 maze.show("hex", config["OUTPUT_FILE"])
-            case "4":
+            case 2:
+                show_path = not show_path
+            case 3:
+                color = input("Select wall color\n"
+                              "1. White\n"
+                              "2. Blue\n"
+                              "3. Green\n"
+                              "4. Red\n")
+            case 4:
                 print("Exiting...")
                 done = True
             case _:
                 print("Invalid choice. Try again...")
+
 
 
 
