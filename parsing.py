@@ -49,14 +49,21 @@ def parse_config(config: dict[str, str]
 
 
 def check_config(config: dict[str, str]) -> None:
-    REQUIRED_KEYS = ["WIDTH", "HEIGHT", "ENTRY", "EXIT", "OUTPUT_FILE", "PERFECT"]
+    REQUIRED_KEYS = ["WIDTH",
+                     "HEIGHT",
+                     "ENTRY",
+                     "EXIT",
+                     "OUTPUT_FILE",
+                     "PERFECT"]
     if any(key for key in REQUIRED_KEYS if key not in config):
         raise ValueError("Invalid config")
 
 
-def build_config_dict(config_file: str) -> dict[str, str | bool | int | tuple[int, int]]:
+def build_config_dict(config_file: str
+                      ) -> dict[str, str | bool | int | tuple[int, int]]:
     with open(config_file, "r") as file:
-        buffer = [line for line in file.read().split("\n") if is_readable_line(line)]
+        buffer = [line for line in file.read().split("\n")
+                  if is_readable_line(line)]
     keys = [key.split("=")[0] for key in buffer]
     values = [value.split("=")[1] for value in buffer]
     duplicate = find_duplicate(keys)

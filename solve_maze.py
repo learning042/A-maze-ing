@@ -1,5 +1,5 @@
 from maze import Maze
-from cell import Cell, DIRECTIONS
+from cell import DIRECTIONS
 from tuple_op import subtract_tuples
 
 

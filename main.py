@@ -1,7 +1,6 @@
-from maze_gen import MazeGenerator, DFSGenerator
+from maze_gen import MazeGenerator, DFSGenerator, KruskalGenerator, AldousBroderGenerator
 from maze import Maze
 from render import render_maze
-from solve_maze import solve_maze
 from parsing import build_config_dict
 import os
 import random
@@ -34,7 +33,7 @@ def main() -> None:
         sys.exit(1)
     if "SEED" in config:
         random.seed(config["SEED"])
-    gen = DFSGenerator()
+    gen = AldousBroderGenerator()
     maze = make_maze(config, gen)
     maze.show("hex", config["OUTPUT_FILE"])
     done = False
@@ -45,7 +44,6 @@ def main() -> None:
         subprocess.run(["cls" if os.name == "nt" else "clear"])
         view = maze.get_graphical_view()
         print(render_maze(view, rgb_wall, rgb_floor, show_path))
-        #print(view)
         print("=== A-Maze-ing ===")
         choice = 0
         while (choice not in range(1, 5)):
@@ -57,13 +55,12 @@ def main() -> None:
                             "4. Quit\n"
                             "Choice? (1-4): "))
             except ValueError:
+                print("Please insert a valid number")
                 continue
             except (KeyboardInterrupt, EOFError):
                 choice = 4
             finally:
-                sys.stdout.write("\033[8F\033[?25l")
-                sys.stdout.write("\033[0J\033[?25l")
-                print("\nInvalid choice\n")
+                print("\033[7F\033[0J")
         match choice:
             case 1:
                 maze = make_maze(config, gen)

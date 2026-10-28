@@ -1,7 +1,6 @@
 from cell import Cell
 from tuple_op import sum_tuples, subtract_tuples
 from typing import IO
-from render import colorize_string
 import random
 import sys
 from contextlib import nullcontext
@@ -270,10 +269,6 @@ class Maze:
         return deadends
 
 
-
-
-
-
 def main2() -> None:
     maze = Maze(5, 5, (4, 4))
     #maze.print_maze()
@@ -307,7 +302,7 @@ def main2() -> None:
 
 def main() -> None:
     from maze_gen import DFSGenerator
-    gen = DFSGenerator()#####
+    gen = DFSGenerator()
     maze = gen.generator(10, 10)
     maze.print_maze()
 
