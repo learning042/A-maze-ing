@@ -43,8 +43,6 @@ class MazeGenerator(ABC):
             time.sleep(frame_duration)
         print("\033[?25h\n")
         subprocess.run(["cls" if os.name == "nt" else "clear"])
-        print(width)
-        print(height)
         maze.turn_all_cells_unvisited()
         return maze
 

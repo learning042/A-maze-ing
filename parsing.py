@@ -28,6 +28,11 @@ def parse_config(config: dict[str, str]
     for key in config.keys():
         if key == "OUTPUT_FILE":
             built_config[key] = config[key]
+        elif key == "ALGORITHM":
+            if config[key] not in ("DFS", "KRUSKAL", "ALDOUS_BRODER"):
+                raise ValueError("ALGORITHM should be 'DFS', 'KRUSKAL' or 'ALDOUS_BRODER'")
+            else:
+                built_config[key] = config[key]
         elif key == "PERFECT":
             if config[key].title() not in ("True", "False"):
                 raise ValueError("PERFECT should be either 'True' or 'False'")
@@ -44,7 +49,7 @@ def parse_config(config: dict[str, str]
                     )
             built_config[key] = value
         else:
-            raise Exception(f"Invalid key: '{key}' in file 'config.txt'.")
+            raise ValueError(f"Invalid key: '{key}' in file 'config.txt'.")
     return built_config
 
 
@@ -68,7 +73,7 @@ def build_config_dict(config_file: str
     values = [value.split("=")[1] for value in buffer]
     duplicate = find_duplicate(keys)
     if duplicate is not None:
-        raise Exception(f"Duplicated key {duplicate} in file '{config_file}'")
+        raise ValueError(f"Duplicated key {duplicate} in file '{config_file}'")
     config = {key: value for (key, value) in zip(keys, values)}
     check_config(config)
     return parse_config(config)

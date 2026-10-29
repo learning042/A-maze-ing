@@ -7,34 +7,49 @@ import random
 import subprocess
 import sys
 
+MAZE_ALGORITHMS = {
+                    "DFS": DFSGenerator,
+                    "KRUSKAL": KruskalGenerator,
+                    "ALDOUS_BRODER": AldousBroderGenerator
+                   }
+
 
 def make_maze(config: dict[str, str | bool | int | tuple[int, int]],
               gen: MazeGenerator) -> Maze | None:
     try:
         maze = gen.creator(config["WIDTH"], config["HEIGHT"], config["EXIT"], has_42=True)
-        if not config["PERFECT"]:
+        if maze is None:
+            return
+        elif not config["PERFECT"]:
             maze.pacman()
         return maze
     except Exception as error:
         print(error)
         sys.exit(1)
-    if maze is None:
-        return
 
 
 def main() -> None:
     if len(sys.argv) != 2:
-        print("Usage: python main.py config.txt")
+        print("Usage: python a_maze_ing.py config.txt")
         sys.exit(1)
     try:
         config = build_config_dict(sys.argv[1])
-    except Exception as e:
+    except ValueError as e:
         print(e)
+        sys.exit(1)
+    except (OSError, UnicodeDecodeError):
+        print(f"Error opening {sys.argv[1]}, exiting...")
         sys.exit(1)
     if "SEED" in config:
         random.seed(config["SEED"])
-    gen = AldousBroderGenerator()
+    if "ALGORITHM" in config:
+        gen = MAZE_ALGORITHMS[config["ALGORITHM"]]()
+    else:
+        gen = MAZE_ALGORITHMS["DFS"]() 
     maze = make_maze(config, gen)
+    if maze is None:
+        print("Maze generation failed!")
+        sys.exit(1)
     maze.show("hex", config["OUTPUT_FILE"])
     done = False
     show_path = False
@@ -64,6 +79,9 @@ def main() -> None:
         match choice:
             case 1:
                 maze = make_maze(config, gen)
+                if maze is None:
+                    print("Maze generation failed, exiting...")
+                    sys.exit(1)
                 maze.show("hex", config["OUTPUT_FILE"])
             case 2:
                 show_path = not show_path
