@@ -28,14 +28,15 @@ class MazeGenerator(ABC):
                 frame_duration: float = 0.001
                 ) -> Maze | None:
         if width == 0 and height == 0:
-            return
+            return None
         maze = Maze(width, height, end, start)
         if has_42:
             if width < 9 or height < 6:
                 del maze
                 raise ValueError("Invalid maze size.")
             maze.add_42icon()
-        sys.stdout.write("\033[2J\033[?25l")  # limpa uma vez e esconde o cursor
+        # limpa uma vez e esconde o cursor
+        sys.stdout.write("\033[2J\033[?25l")
         for snapshot in self.generator(maze):
             frame = snapshot.get_graphical_view().replace("\n", "\n\r")
             print("\033[H" + frame)

@@ -52,7 +52,11 @@ class Cell:
     def hex(self) -> str:
         return hex(self.north + 2*self.east + 4*self.south + 8*self.west)[2:]
 
-    def edit_wall_from_cell(self, direction: tuple[int, int], state: bool) -> None:
+    def edit_wall_from_cell(
+            self,
+            direction: tuple[int, int],
+            state: bool
+            ) -> None:
         wall = next(w for w in DIRECTIONS.keys() if DIRECTIONS[w] == direction)
         setattr(self, wall, state)
 

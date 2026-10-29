@@ -8,7 +8,10 @@ def colorize_string(
     red = red % 256
     green = green % 256
     blue = blue % 256
-    return f"\033[{38 + is_background * 10};2;{red};{green};{blue}m{text}\033[0m"
+    return (
+            f"\033[{38 + is_background * 10};"
+            "2;{red};{green};{blue}m{text}\033[0m"
+            )
 
 
 def render_maze(

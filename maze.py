@@ -38,8 +38,8 @@ class Maze:
         Args:
             width : width of the maze in cell-side unit
             height : height of the maze int cell-side unit
-            grid : list of lists where each list has a cell object for each line
-                        of the maze
+            grid : list of lists where each list has a cell object for each
+                        line of the maze
         """
         self.width = width
         self.height = height
@@ -84,7 +84,10 @@ class Maze:
         cell.mark_visited()
 
     def return_available_neighbors(self, cell: Cell) -> list[Cell]:
-        """Return the available (not visited and possible to visit) cells around the cursor."""
+        """
+        Return the available (not visited and possible to visit)
+        cells around the cursor.
+        """
         position = cell.position()
         not_visited: list[Cell] = []
         for direction in (NORTH, EAST, SOUTH, WEST):
@@ -110,7 +113,9 @@ class Maze:
                 neighbor = self.grid[cell_position[0]][cell_position[1]]
             except IndexError:
                 continue
-            key = next(k for k in DIRECTIONS.keys() if DIRECTIONS[k] == direction)
+            key = next(
+                    k for k in DIRECTIONS.keys() if DIRECTIONS[k] == direction
+                    )
             if (not neighbor.visited and
                     not neighbor.is_42 and
                     not getattr(cell, key)):
@@ -123,8 +128,14 @@ class Maze:
     def edit_wall(self, curr_cell: Cell, next_cell: Cell, state: bool) -> None:
         curr_pos = curr_cell.position()
         next_pos = next_cell.position()
-        curr_cell.edit_wall_from_cell(subtract_tuples(next_pos, curr_pos), state)
-        next_cell.edit_wall_from_cell(subtract_tuples(curr_pos, next_pos), state)
+        curr_cell.edit_wall_from_cell(
+                                        subtract_tuples(next_pos, curr_pos),
+                                        state
+                                     )
+        next_cell.edit_wall_from_cell(
+                                        subtract_tuples(curr_pos, next_pos),
+                                        state
+                                     )
 
     def get_graphical_view(self) -> str:
         maze_representation = "██" + "█████" * self.width + "\n"
@@ -205,17 +216,19 @@ class Maze:
         def fill_horizontal_hole(maze: Maze) -> None:
             for i in range(maze.height):
                 for j in range(maze.width):
-                    horizontal = 0
+                    hor = 0
                     try:
-                        while (not maze.get_cell(i, j + horizontal).east and
-                               not maze.get_cell(i, j + horizontal).south and
-                               not maze.get_cell(i + 1, j + horizontal).east and
-                               not maze.get_cell(i, j + horizontal + 1).south):
-                            horizontal += 1
+                        while (
+                                not maze.get_cell(i, j + hor).east and
+                                not maze.get_cell(i, j + hor).south and
+                                not maze.get_cell(i + 1, j + hor).east and
+                                not maze.get_cell(i, j + hor + 1).south
+                              ):
+                            hor += 1
                     except IndexError:
                         break
-                    if horizontal > 1:
-                        for k in range(1, horizontal):
+                    if hor > 1:
+                        for k in range(1, hor):
                             maze.edit_wall(maze.get_cell(i, j + k),
                                            maze.get_cell(i + 1, j + k),
                                            True)
@@ -223,17 +236,17 @@ class Maze:
         def fill_vertical_hole(maze: Maze) -> None:
             for j in range(maze.width):
                 for i in range(maze.height):
-                    vertical = 0
+                    ver = 0
                     try:
-                        while (not maze.get_cell(i + vertical, j).east and
-                               not maze.get_cell(i + vertical, j).south and
-                               not maze.get_cell(i + vertical, j + 1).south and
-                               not maze.get_cell(i + vertical + 1, j).east):
-                            vertical += 1
+                        while (not maze.get_cell(i + ver, j).east and
+                               not maze.get_cell(i + ver, j).south and
+                               not maze.get_cell(i + ver, j + 1).south and
+                               not maze.get_cell(i + ver + 1, j).east):
+                            ver += 1
                     except IndexError:
                         break
-                    if vertical > 1:
-                        for k in range(1, vertical):
+                    if ver > 1:
+                        for k in range(1, ver):
                             self.edit_wall(maze.get_cell(i + k, j),
                                            maze.get_cell(i + k, j + 1),
                                            True)
@@ -291,21 +304,10 @@ def main2() -> None:
 
     view = maze.get_graphical_view()
     print(view)
-    maze.pacman3()
+    # maze.pacman3()
     view = maze.get_graphical_view()
     print(view)
 
     #maze.edit_wall(curr, next, True)
     #view = maze.get_graphical_view()
     #print(view)
-
-
-def main() -> None:
-    from maze_gen import DFSGenerator
-    gen = DFSGenerator()
-    maze = gen.generator(10, 10)
-    maze.print_maze()
-
-
-if __name__ == "__main__":
-    main2()

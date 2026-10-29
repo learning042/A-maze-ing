@@ -24,7 +24,7 @@ def find_duplicate(keys: list[str]) -> str | None:
 
 def parse_config(config: dict[str, str]
                  ) -> dict[str, str | bool | int | tuple[int, int]]:
-    built_config = {}
+    built_config: dict[str, str | bool | int | tuple[int, int]] = {}
     for key in config.keys():
         if key == "OUTPUT_FILE":
             built_config[key] = config[key]
@@ -72,8 +72,3 @@ def build_config_dict(config_file: str
     config = {key: value for (key, value) in zip(keys, values)}
     check_config(config)
     return parse_config(config)
-
-
-if __name__ == "__main__":
-    config = build_config_dict()
-    print(config)
