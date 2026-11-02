@@ -14,3 +14,6 @@ PERFECT=True
 
 # Optional
 SEED=42
+
+# Algorithm
+ALGORITHM=DFS

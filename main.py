@@ -1,4 +1,8 @@
-from maze_gen import MazeGenerator, DFSGenerator, KruskalGenerator, AldousBroderGenerator
+from maze_gen import (MazeGenerator,
+                      DFSGenerator,
+                      KruskalGenerator,
+                      AldousBroderGenerator
+                      )
 from maze import Maze
 from render import render_maze
 from parsing import build_config_dict
@@ -17,7 +21,12 @@ MAZE_ALGORITHMS = {
 def make_maze(config: dict[str, str | bool | int | tuple[int, int]],
               gen: MazeGenerator) -> Maze | None:
     try:
-        maze = gen.creator(config["WIDTH"], config["HEIGHT"], config["EXIT"], has_42=True)
+        maze = gen.creator(
+                            config["WIDTH"],
+                            config["HEIGHT"],
+                            config["EXIT"],
+                            has_42=True
+                            )
         if maze is None:
             return
         elif not config["PERFECT"]:
@@ -45,7 +54,7 @@ def main() -> None:
     if "ALGORITHM" in config:
         gen = MAZE_ALGORITHMS[config["ALGORITHM"]]()
     else:
-        gen = MAZE_ALGORITHMS["DFS"]() 
+        gen = MAZE_ALGORITHMS["DFS"]()
     maze = make_maze(config, gen)
     if maze is None:
         print("Maze generation failed!")
@@ -86,48 +95,18 @@ def main() -> None:
             case 2:
                 show_path = not show_path
             case 3:
-                color = input("Select wall color\n"
+                color = input(
+                              "Select wall color\n"
                               "1. White\n"
                               "2. Blue\n"
                               "3. Green\n"
-                              "4. Red\n")
+                              "4. Red\n"
+                              )
             case 4:
                 print("Exiting...")
                 done = True
             case _:
                 print("Invalid choice. Try again...")
-
-
-
-
-    #print(f"End: {maze.end}")
-    #currently = solve_maze(maze)
-    #print(f"currently: {currently.position()}")
-
-
-def main2() -> None:
-    gen = DFSGenerator()
-    maze = gen.creator(10, 10, (9, 9))
-    maze.show("hex", "output.txt")
-    view = maze.get_graphical_view()
-    print(render_maze(view, 0, 50, 255, 200, 200, 50))
-    #print(view)
-    #print(f"End: {maze.end}")
-    #currently = solve_maze(maze)
-    #print(f"currently: {currently.position()}")
-    #while currently is not None:
-    #    print(currently.position())
-    #    currently = currently.parent
-    #maze = Maze(20, 20, (0, 0))
-    #print(maze.get_graphical_view())
-    maze.pacman()
-    maze.pacman2()
-    maze.pacman3()
-    view = maze.get_graphical_view()
-
-    print(render_maze(view, 0, 50, 255, 200, 200, 50))
-
-    maze.show("hex", "pacman.txt")
 
 
 if __name__ == "__main__":

@@ -282,32 +282,12 @@ class Maze:
         return deadends
 
 
-def main2() -> None:
-    maze = Maze(5, 5, (4, 4))
-    #maze.print_maze()
-    print()
-    #curr = maze.get_cell(3, 4)
-    #next = maze.get_cell(3, 3)
-    #maze.edit_wall(curr, next, False)
-
-    maze.edit_wall(maze.get_cell(0, 0), maze.get_cell(0, 1), False)
-    maze.edit_wall(maze.get_cell(0, 0), maze.get_cell(1, 0), False)
-    maze.edit_wall(maze.get_cell(0, 1), maze.get_cell(1, 1), False)
-    maze.edit_wall(maze.get_cell(1, 0), maze.get_cell(1, 1), False)
-    #maze.edit_wall(maze.get_cell(0, 1), maze.get_cell(0, 2), False)
-    #maze.edit_wall(maze.get_cell(1, 1), maze.get_cell(1, 2), False)
-    #maze.edit_wall(maze.get_cell(0, 2), maze.get_cell(1, 2), False)
-
-    maze.edit_wall(maze.get_cell(1, 0), maze.get_cell(2, 0), False)
-    maze.edit_wall(maze.get_cell(1, 1), maze.get_cell(2, 1), False)
-    maze.edit_wall(maze.get_cell(2, 0), maze.get_cell(2, 1), False)
-
-    view = maze.get_graphical_view()
-    print(view)
-    # maze.pacman3()
-    view = maze.get_graphical_view()
-    print(view)
-
-    #maze.edit_wall(curr, next, True)
-    #view = maze.get_graphical_view()
-    #print(view)
+    def get_walls(self) -> list[list[Cell]]:
+        walls: list[list[Cell]] = []
+        for row in self.grid:
+            for cell in row:
+                for neighbour in self.return_available_neighbors(cell):
+                    if (cell.row < neighbour.row
+                        or (cell.row  == neighbour.row and cell.col < neighbour.col)):
+                        walls.append([cell, neighbour])
+        return walls

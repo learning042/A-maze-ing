@@ -71,12 +71,12 @@ class KruskalGenerator(MazeGenerator):
                   maze: Maze
                   ) -> Generator[Maze, None, Maze]:
         cell_set = DisjointSet([cell for row in maze.grid for cell in row])
-        walls = [[cell, neighbour] for row in maze.grid for cell in row for neighbour in maze.return_available_neighbors(cell) if
-                 (cell.row < neighbour.row) or (cell.row == neighbour.row and cell.col < neighbour.col)]
+        walls = maze.get_walls()
         while walls:
             random_wall = walls.pop(random.randrange(len(walls)))
             cell1, cell2 = random_wall
-            if not cell1.is_42 and not cell2.is_42 and cell_set.find(cell1) != cell_set.find(cell2):
+            if (not (cell1.is_42 and not cell2.is_42)
+                    and cell_set.find(cell1) != cell_set.find(cell2)):
                 maze.edit_wall(cell1, cell2, False)
                 cell_set.union(cell1, cell2)
                 yield maze
@@ -89,7 +89,8 @@ class AldousBroderGenerator(MazeGenerator):
         maze.turn_all_cells_unvisited()
         curr = maze.get_cell(*maze.start)
         curr.mark_visited()
-        while any([not cell.visited and not cell.is_42 for row in maze.grid for cell in row]):
+        while any(not cell.visited and not cell.is_42
+                  for row in maze.grid for cell in row):
             position = curr.position()
             neighbors: list[Cell] = []
             for direction in (NORTH, EAST, SOUTH, WEST):

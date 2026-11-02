@@ -30,7 +30,10 @@ def parse_config(config: dict[str, str]
             built_config[key] = config[key]
         elif key == "ALGORITHM":
             if config[key] not in ("DFS", "KRUSKAL", "ALDOUS_BRODER"):
-                raise ValueError("ALGORITHM should be 'DFS', 'KRUSKAL' or 'ALDOUS_BRODER'")
+                raise ValueError(
+                                  "ALGORITHM should be "
+                                  "'DFS', 'KRUSKAL' or 'ALDOUS_BRODER'"
+                                  )
             else:
                 built_config[key] = config[key]
         elif key == "PERFECT":
@@ -54,12 +57,14 @@ def parse_config(config: dict[str, str]
 
 
 def check_config(config: dict[str, str]) -> None:
-    REQUIRED_KEYS = ["WIDTH",
+    REQUIRED_KEYS = [
+                     "WIDTH",
                      "HEIGHT",
                      "ENTRY",
                      "EXIT",
                      "OUTPUT_FILE",
-                     "PERFECT"]
+                     "PERFECT"
+                     ]
     if any(key for key in REQUIRED_KEYS if key not in config):
         raise ValueError("Invalid config")
 
