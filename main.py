@@ -61,7 +61,7 @@ def main() -> None:
         sys.exit(1)
     maze.show("hex", config["OUTPUT_FILE"])
     done = False
-    show_path = False
+    show_path = True
     rgb_wall = (0, 130, 170)
     rgb_floor = (200, 200, 50)
     while not done:

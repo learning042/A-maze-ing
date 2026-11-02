@@ -39,8 +39,12 @@ class MazeGenerator(ABC):
         sys.stdout.write("\033[2J\033[?25l")
         for snapshot in self.generator(maze):
             frame = snapshot.get_graphical_view().replace("\n", "\n\r")
+            # CSI n ; m H
+            # Moves the cursor to row n, column m. The values are 1-based, and
+            # default to 1 (top left corner) if omitted.
             print("\033[H" + frame)
             time.sleep(frame_duration)
+        # Shows the cursor
         print("\033[?25h\n")
         subprocess.run(["cls" if os.name == "nt" else "clear"])
         maze.turn_all_cells_unvisited()

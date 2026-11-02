@@ -3,7 +3,9 @@ from tuple_op import sum_tuples, subtract_tuples
 from typing import IO
 import random
 import sys
+import time
 from contextlib import nullcontext
+from render import render_maze
 
 RESET = "\033[0m"
 WALL_COLOR = "\033[38;2;200;200;220m"   # cinza claro / lavanda
@@ -59,7 +61,7 @@ class Maze:
         append: bool = False
      ) -> None:
 
-        from solve_maze import solve_maze
+        from solve_maze import solve_maze, get_path
         mode = "a" if append else "w"
         context: IO[str] | nullcontext = nullcontext(sys.stdout)
         if filename != "sys.stdout":
@@ -77,7 +79,16 @@ class Maze:
                 print(file=f)
             print(f"\n{self.start[0]},{self.start[1]}", file=f)
             print(f"{self.end[0]},{self.end[1]}", file=f)
-            print(solve_maze(self), file=f)
+            rgb_wall = (0, 130, 170)
+            rgb_floor = (200, 200, 50)
+            frame_duration = 0.1
+            for _ in solve_maze(self):
+                view = self.get_graphical_view()
+                print("\033[H" + render_maze(view, rgb_wall, rgb_floor))
+                time.sleep(frame_duration)
+            print("\033[?25h\n")
+            print(get_path(self), file=f)
+            self.turn_all_cells_unvisited()
 
     def mark_visited(self, row: int, column: int) -> None:
         cell = self.grid[row][column]
@@ -154,6 +165,8 @@ class Maze:
                         row_raw += "eee"
                     elif cell.in_path:
                         row_raw += "---"
+                    elif cell.visited:
+                        row_raw += "vvv"
                     else:
                         row_raw += "   "
                     if cell.east:
@@ -161,6 +174,9 @@ class Maze:
                     elif (cell.in_path and
                           self.get_cell(position[0], position[1] + 1).in_path):
                         row_raw += "--"
+                    elif (cell.visited and
+                          self.get_cell(position[0], position[1] + 1).visited):
+                        row_raw += "vv"
                     else:
                         row_raw += "  "
             maze_representation += row_raw + "\n"
@@ -175,6 +191,10 @@ class Maze:
                         self.get_cell(position[0] + 1,
                                       position[1]).in_path):
                         row_bottom += "---"
+                    elif (cell.visited and
+                          self.get_cell(position[0] + 1,
+                                        position[1]).visited):
+                        row_bottom += "vvv"
                     else:
                         row_bottom += "   "
                     if (cell.east or
@@ -182,6 +202,11 @@ class Maze:
                             self.get_cell(position[0] + 1, position[1]).east or
                             self.get_cell(position[0], position[1] + 1).south):
                         row_bottom += "██"
+                    elif (cell.visited and
+                          self.get_cell(position[0] + 1, position[1]).visited and
+                          self.get_cell(position[0], position[1] + 1).visited and
+                          self.get_cell(position[0] + 1, position[1] + 1).visited):
+                        row_bottom += "vv"
                     else:
                         row_bottom += "  "
 
@@ -280,7 +305,6 @@ class Maze:
             if getattr(cell, direction) and not adj_cell.is_42:
                 deadends.append(adj_cell)
         return deadends
-
 
     def get_walls(self) -> list[list[Cell]]:
         walls: list[list[Cell]] = []

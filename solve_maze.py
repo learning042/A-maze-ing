@@ -1,10 +1,12 @@
 from maze import Maze
 from cell import DIRECTIONS
 from tuple_op import subtract_tuples
+from typing import Generator
 
 
-def solve_maze(maze: Maze) -> str:
+def solve_maze(maze: Maze) -> Generator[None, None, None]:
     maze.reset_path()
+    maze.turn_all_cells_unvisited()
     start = maze.get_cell(*maze.start)
     end = maze.get_cell(*maze.end)
     start.mark_visited()
@@ -12,14 +14,18 @@ def solve_maze(maze: Maze) -> str:
     while queue:
         current = queue.pop(0)
         if current == end:
-            break
+            return
         neighbors = maze.return_available_moves(current)
         for neighbor in neighbors:
             neighbor.mark_visited()
             neighbor.parent = current
             queue.append(neighbor)
+            yield
+
+
+def get_path(maze: Maze) -> str:
     path = ""
-    curr = end
+    curr = maze.get_cell(*maze.end)
     curr.in_path = True
     while curr.parent is not None:
         delta = subtract_tuples(curr.position(), curr.parent.position())
@@ -31,5 +37,15 @@ def solve_maze(maze: Maze) -> str:
         curr = curr.parent
         curr.in_path = True
     path = path[::-1]
-    maze.turn_all_cells_unvisited()
     return path
+
+
+if __name__ == "__main__":
+    from maze_gen import DFSGenerator
+    g = DFSGenerator()
+    maze = g.creator(10, 10, (9, 9))
+    for _ in solve_maze(maze):
+        continue
+    print(maze.get_graphical_view())
+    print(get_path(maze))
+    

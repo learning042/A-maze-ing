@@ -18,19 +18,26 @@ def render_maze(
         maze_representation: str,
         rgb_wall: tuple[int, int, int],
         rgb_floor: tuple[int, int, int],
-        show_maze: bool = False
+        show_path: bool = True
         ) -> str:
     result = ""
     red_wall, green_wall, blue_wall = rgb_wall
     red_floor, green_floor, blue_floor = rgb_floor
     for char in maze_representation:
-        if char == " " or (char == "-" and not show_maze):
+        if char == " " or (char == "-" and not show_path):
             result += colorize_string(
                                       " ",
                                       red_floor,
                                       green_floor,
                                       blue_floor,
                                       True
+                                      )
+        elif char == "v":
+            result += colorize_string(
+                                      "█",
+                                      red_floor,
+                                      green_floor + 50,
+                                      blue_floor + 20
                                       )
         elif char == "-":
             result += colorize_string(
