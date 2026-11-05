@@ -33,21 +33,21 @@ def make_maze(config: dict[str, str | bool | int | tuple[int, int]],
             maze.pacman()
         return maze
     except Exception as error:
-        print(error)
+        print(error, file=sys.stderr)
         sys.exit(1)
 
 
 def main() -> None:
     if len(sys.argv) != 2:
-        print("Usage: python a_maze_ing.py config.txt")
+        print("Usage: python a_maze_ing.py config.txt", file=sys.stderr)
         sys.exit(1)
     try:
         config = build_config_dict(sys.argv[1])
     except ValueError as e:
-        print(e)
+        print(e, file=sys.stderr)
         sys.exit(1)
     except (OSError, UnicodeDecodeError):
-        print(f"Error opening {sys.argv[1]}, exiting...")
+        print(f"Error opening {sys.argv[1]}, exiting...", file=sys.stderr)
         sys.exit(1)
     if "SEED" in config:
         random.seed(config["SEED"])
@@ -57,7 +57,7 @@ def main() -> None:
         gen = MAZE_ALGORITHMS["DFS"]()
     maze = make_maze(config, gen)
     if maze is None:
-        print("Maze generation failed!")
+        print("Maze generation failed!", file=sys.stderr)
         sys.exit(1)
     maze.show("hex", config["OUTPUT_FILE"])
     done = False
@@ -79,7 +79,7 @@ def main() -> None:
                             "4. Quit\n"
                             "Choice? (1-4): "))
             except ValueError:
-                print("Please insert a valid number")
+                print("Please insert a valid number", file=sys.stderr)
                 continue
             except (KeyboardInterrupt, EOFError):
                 choice = 4
@@ -89,7 +89,8 @@ def main() -> None:
             case 1:
                 maze = make_maze(config, gen)
                 if maze is None:
-                    print("Maze generation failed, exiting...")
+                    print("Maze generation failed, exiting...",
+                          file=sys.stderr)
                     sys.exit(1)
                 maze.show("hex", config["OUTPUT_FILE"])
             case 2:
@@ -106,7 +107,7 @@ def main() -> None:
                 print("Exiting...")
                 done = True
             case _:
-                print("Invalid choice. Try again...")
+                print("Invalid choice. Try again...", file=sys.stderr)
 
 
 if __name__ == "__main__":

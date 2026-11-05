@@ -58,7 +58,8 @@ class Maze:
         attribute: str,
         filename: str = "sys.stdout",
         clear: bool = False,
-        append: bool = False
+        append: bool = False,
+        solving_animation=True
      ) -> None:
 
         from solve_maze import solve_maze, get_path
@@ -83,9 +84,10 @@ class Maze:
             rgb_floor = (200, 200, 50)
             frame_duration = 0.1
             for _ in solve_maze(self):
-                view = self.get_graphical_view()
-                print("\033[H" + render_maze(view, rgb_wall, rgb_floor))
-                time.sleep(frame_duration)
+                if solving_animation:
+                    view = self.get_graphical_view()
+                    print("\033[H" + render_maze(view, rgb_wall, rgb_floor))
+                    time.sleep(frame_duration)
             print("\033[?25h\n")
             print(get_path(self), file=f)
             self.turn_all_cells_unvisited()
@@ -203,8 +205,10 @@ class Maze:
                             self.get_cell(position[0], position[1] + 1).south):
                         row_bottom += "██"
                     elif (cell.visited and
-                          self.get_cell(position[0] + 1, position[1]).visited and
-                          self.get_cell(position[0], position[1] + 1).visited and
+                          self.get_cell(position[0] + 1, position[1]).visited
+                          and
+                          self.get_cell(position[0], position[1] + 1).visited
+                          and
                           self.get_cell(position[0] + 1, position[1] + 1).visited):
                         row_bottom += "vv"
                     else:
@@ -312,6 +316,7 @@ class Maze:
             for cell in row:
                 for neighbour in self.return_available_neighbors(cell):
                     if (cell.row < neighbour.row
-                        or (cell.row  == neighbour.row and cell.col < neighbour.col)):
+                        or (cell.row == neighbour.row
+                            and cell.col < neighbour.col)):
                         walls.append([cell, neighbour])
         return walls
