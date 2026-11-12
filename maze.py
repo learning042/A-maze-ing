@@ -26,6 +26,28 @@ DIRECTIONS = {
 }
 
 
+COLORS = {
+    "white":     (236, 240, 241),
+    "red":       (231, 76, 60),
+    "green":     (46, 204, 113),
+    "blue":      (52, 152, 219),
+    "yellow":    (241, 196, 15),
+    "orange":    (230, 126, 34),
+    "purple":    (155, 89, 182),
+    "cyan":      (26, 188, 156),
+    "pink":      (253, 121, 168),
+    "gray":      (127, 140, 141),
+    "dark_gray": (52, 73, 94),
+    "black":     (20, 20, 24),
+}
+
+
+MAZE_COLORS = {
+        "WALL": COLORS["blue"],
+        "FLOOR": COLORS["yellow"]
+}
+
+
 class Maze:
     """Defines the maze"""
     def __init__(self,
@@ -80,8 +102,8 @@ class Maze:
                 print(file=f)
             print(f"\n{self.start[0]},{self.start[1]}", file=f)
             print(f"{self.end[0]},{self.end[1]}", file=f)
-            rgb_wall = (0, 130, 170)
-            rgb_floor = (200, 200, 50)
+            rgb_wall = MAZE_COLORS["WALL"]
+            rgb_floor = MAZE_COLORS["FLOOR"]
             frame_duration = 0.1
             for _ in solve_maze(self):
                 if solving_animation:

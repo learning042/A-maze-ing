@@ -3,7 +3,7 @@ from maze_gen import (MazeGenerator,
                       KruskalGenerator,
                       AldousBroderGenerator
                       )
-from maze import Maze
+from maze import Maze, COLORS, MAZE_COLORS
 from render import render_maze
 from parsing import build_config_dict
 import os
@@ -11,11 +11,13 @@ import random
 import subprocess
 import sys
 
+
 MAZE_ALGORITHMS = {
                     "DFS": DFSGenerator,
                     "KRUSKAL": KruskalGenerator,
                     "ALDOUS_BRODER": AldousBroderGenerator
                    }
+
 
 
 def make_maze(config: dict[str, str | bool | int | tuple[int, int]],
@@ -62,9 +64,9 @@ def main() -> None:
     maze.show("hex", config["OUTPUT_FILE"])
     done = False
     show_path = True
-    rgb_wall = (0, 130, 170)
-    rgb_floor = (200, 200, 50)
     while not done:
+        rgb_wall = MAZE_COLORS["WALL"]
+        rgb_floor = MAZE_COLORS["FLOOR"]
         subprocess.run(["cls" if os.name == "nt" else "clear"])
         view = maze.get_graphical_view()
         print(render_maze(view, rgb_wall, rgb_floor, show_path))
@@ -96,13 +98,35 @@ def main() -> None:
             case 2:
                 show_path = not show_path
             case 3:
-                color = input(
-                              "Select wall color\n"
-                              "1. White\n"
-                              "2. Blue\n"
-                              "3. Green\n"
-                              "4. Red\n"
-                              )
+                try:
+                    color_wall = input(
+                                  "Select wall color\n"
+                                  "- Yellow\n"
+                                  "- Orange\n"
+                                  "- Purple\n"
+                                  "- Cyan\n"
+                                  "- Pink\n"
+                                  "- Gray\n"
+                                  "- Dark_gray\n"
+                                  "- Black\n"
+                                  ).lower()
+                    color_floor = input(
+                                  "Select wall color\n"
+                                  "- Yellow\n"
+                                  "- Orange\n"
+                                  "- Purple\n"
+                                  "- Cyan\n"
+                                  "- Pink\n"
+                                  "- Gray\n"
+                                  "- Dark_gray\n"
+                                  "- Black\n"
+                                  ).lower()
+                    MAZE_COLORS["WALL"] = COLORS[color_wall]
+                    MAZE_COLORS["FLOOR"] = COLORS[color_floor]
+                except (KeyboardInterrupt, EOFError):
+                    pass
+                except KeyError as error:
+                    print(f"Invalid key: {error}")
             case 4:
                 print("Exiting...")
                 done = True
