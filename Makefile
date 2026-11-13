@@ -12,13 +12,21 @@ VENV_NAME ?= venv
 
 CONFIG_FILE ?= config.txt
 
+EXCLUDES = $(VENV_NAME),.venv
+
+MYPY_EXCLUDES = '(^|/)($(VENV_NAME)/|\.venv)/'
+
+RUN = $(if $(filter uv,$(PKG_MANAGER)),uv run,)
+
+
 install:
-	@if  [ "$(PKG_MANAGER)" = "uv" ]; then \
+	@if [ "$(PKG_MANAGER)" = "uv" ]; then \
 		$(PKG_MANAGER) sync; \
 	elif [ "$(PKG_MANAGER)" = "pip" ]; then \
 		$(PKG_MANAGER) install -r requirements.txt; \
 	else \
 		echo "Invalid package manager. Try again with uv or pip"; \
+		exit 1; \
 	fi
 	
 run:
@@ -28,6 +36,7 @@ run:
 		$(PYTHON) $(MAIN) $(CONFIG_FILE); \
 	else \
 		echo "Invalid package manager. Try again with uv or pip"; \
+		exit 1; \
 	fi
 debug:
 	@if [ "$(PKG_MANAGER)" = "uv" ]; then \
@@ -36,6 +45,7 @@ debug:
 		$(PYTHON) -m pdb $(MAIN); \
 	else \
 		echo "Invalid package manager. Try again with uv or pip"; \
+		exit 1;\
 	fi
 
 venv: 
@@ -46,11 +56,11 @@ clean:
 	find . -name ".mypy_cache" -exec rm -rf {} +
 
 lint:
-	flake8 --extend-exclude=./$(VENV_NAME) .
-	mypy . $(MYPY_FLAGS) --exclude '(^|/)$(VENV_NAME)/'
+	@$(RUN) flake8 --extend-exclude=$(EXCLUDES) .
+	@$(RUN) mypy . $(MYPY_FLAGS) --exclude $(MYPY_EXCLUDES)
 
 lint-strict:
-	flake8 --extend-exclude=./$(VENV_NAME) .
-	mypy . $(MYPY_STRICT) --exclude '(^|/)$(VENV_NAME)/'
+	@$(RUN) flake8 --extend-exclude=$(EXCLUDES) .
+	@$(RUN) mypy . $(MYPY_STRICT) --exclude $(MYPY_EXCLUDES) 
 
 .PHONY: install run debug venv clean lint lint-strict

@@ -1,0 +1,15 @@
+[project]
+name = "amazeing"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "learning042",email = "individualthinking1403@gmail.com"}
+]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+	"mypy",
+	"flake8"
+]
+
+[tool.uv]
+package = false

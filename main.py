@@ -3,7 +3,7 @@ from maze_gen import (MazeGenerator,
                       KruskalGenerator,
                       AldousBroderGenerator
                       )
-from maze import Maze, COLORS, MAZE_COLORS
+from maze import Maze, COLORS
 from render import render_maze
 from parsing import build_config_dict
 import os
@@ -19,14 +19,19 @@ MAZE_ALGORITHMS = {
                    }
 
 
-
-def make_maze(config: dict[str, str | bool | int | tuple[int, int]],
-              gen: MazeGenerator) -> Maze | None:
+def make_maze(
+            config: dict[str, str | bool | int | tuple[int, int]],
+            gen: MazeGenerator,
+            wcolor: tuple[int, int, int] = COLORS["yellow"],
+            fcolor: tuple[int, int, int] = COLORS["blue"]
+            ) -> Maze | None:
     try:
         maze = gen.creator(
                             config["WIDTH"],
                             config["HEIGHT"],
                             config["EXIT"],
+                            wcolor=wcolor,
+                            fcolor=fcolor,
                             has_42=True
                             )
         if maze is None:
@@ -65,11 +70,9 @@ def main() -> None:
     done = False
     show_path = True
     while not done:
-        rgb_wall = MAZE_COLORS["WALL"]
-        rgb_floor = MAZE_COLORS["FLOOR"]
         subprocess.run(["cls" if os.name == "nt" else "clear"])
         view = maze.get_graphical_view()
-        print(render_maze(view, rgb_wall, rgb_floor, show_path))
+        print(render_maze(view, maze.wcolor, maze.fcolor, show_path))
         print("=== A-Maze-ing ===")
         choice = 0
         while (choice not in range(1, 5)):
@@ -89,7 +92,7 @@ def main() -> None:
                 print("\033[7F\033[0J")
         match choice:
             case 1:
-                maze = make_maze(config, gen)
+                maze = make_maze(config, gen, maze.wcolor, maze.fcolor)
                 if maze is None:
                     print("Maze generation failed, exiting...",
                           file=sys.stderr)
@@ -109,9 +112,10 @@ def main() -> None:
                                   "- Gray\n"
                                   "- Dark_gray\n"
                                   "- Black\n"
+                                  "Choice: "
                                   ).lower()
                     color_floor = input(
-                                  "Select wall color\n"
+                                  "Select floor color\n"
                                   "- Yellow\n"
                                   "- Orange\n"
                                   "- Purple\n"
@@ -120,9 +124,10 @@ def main() -> None:
                                   "- Gray\n"
                                   "- Dark_gray\n"
                                   "- Black\n"
+                                  "Choice: "
                                   ).lower()
-                    MAZE_COLORS["WALL"] = COLORS[color_wall]
-                    MAZE_COLORS["FLOOR"] = COLORS[color_floor]
+                    maze.wcolor = COLORS[color_wall]
+                    maze.fcolor = COLORS[color_floor]
                 except (KeyboardInterrupt, EOFError):
                     pass
                 except KeyError as error:

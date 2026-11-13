@@ -1,4 +1,4 @@
-from maze import Maze, NORTH, EAST, SOUTH, WEST
+from maze import Maze, NORTH, EAST, SOUTH, WEST, COLORS
 from abc import ABC, abstractmethod
 from collections.abc import Generator
 from cell import Cell
@@ -24,12 +24,14 @@ class MazeGenerator(ABC):
                 height: int,
                 end: tuple[int, int],
                 start: tuple[int, int] = (0, 0),
+                wcolor: tuple[int, int, int] = COLORS["yellow"],
+                fcolor: tuple[int, int, int] = COLORS["blue"],
                 has_42: bool = True,
                 frame_duration: float = 0.001
                 ) -> Maze | None:
         if width == 0 and height == 0:
             return None
-        maze = Maze(width, height, end, start)
+        maze = Maze(width, height, end, start, wcolor, fcolor)
         if has_42:
             if width < 9 or height < 6:
                 del maze

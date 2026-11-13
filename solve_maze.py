@@ -38,14 +38,3 @@ def get_path(maze: Maze) -> str:
         curr.in_path = True
     path = path[::-1]
     return path
-
-
-if __name__ == "__main__":
-    from maze_gen import DFSGenerator
-    g = DFSGenerator()
-    maze = g.creator(10, 10, (9, 9))
-    for _ in solve_maze(maze):
-        continue
-    print(maze.get_graphical_view())
-    print(get_path(maze))
-    

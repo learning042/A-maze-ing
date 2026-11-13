@@ -42,19 +42,15 @@ COLORS = {
 }
 
 
-MAZE_COLORS = {
-        "WALL": COLORS["blue"],
-        "FLOOR": COLORS["yellow"]
-}
-
-
 class Maze:
     """Defines the maze"""
     def __init__(self,
                  width: int,
                  height: int,
                  end: tuple[int, int],
-                 start: tuple[int, int] = (0, 0)
+                 start: tuple[int, int] = (0, 0),
+                 wcolor: tuple[int, int, int] = COLORS["yellow"],
+                 fcolor: tuple[int, int, int] = COLORS["blue"]
                  ) -> None:
         """
         Instantiate a new maze.
@@ -72,6 +68,8 @@ class Maze:
                      for row in range(height)
                      ]
         self.start = start
+        self.wcolor = wcolor
+        self.fcolor = fcolor
         self.end = end
         self.mark_visited(*self.start)
 
@@ -102,13 +100,13 @@ class Maze:
                 print(file=f)
             print(f"\n{self.start[0]},{self.start[1]}", file=f)
             print(f"{self.end[0]},{self.end[1]}", file=f)
-            rgb_wall = MAZE_COLORS["WALL"]
-            rgb_floor = MAZE_COLORS["FLOOR"]
             frame_duration = 0.1
+            wcolor = self.wcolor
+            fcolor = self.fcolor
             for _ in solve_maze(self):
                 if solving_animation:
                     view = self.get_graphical_view()
-                    print("\033[H" + render_maze(view, rgb_wall, rgb_floor))
+                    print("\033[H" + render_maze(view, wcolor, fcolor))
                     time.sleep(frame_duration)
             print("\033[?25h\n")
             print(get_path(self), file=f)
@@ -209,32 +207,32 @@ class Maze:
             for cell in row:
                 if cell.south:
                     row_bottom += "█████"
+                    continue
+                position = cell.position()
+                if (cell.in_path and
+                    self.get_cell(position[0] + 1,
+                                  position[1]).in_path):
+                    row_bottom += "---"
+                elif (cell.visited and
+                      self.get_cell(position[0] + 1,
+                                    position[1]).visited):
+                    row_bottom += "vvv"
                 else:
-                    position = cell.position()
-                    if (cell.in_path and
-                        self.get_cell(position[0] + 1,
-                                      position[1]).in_path):
-                        row_bottom += "---"
-                    elif (cell.visited and
-                          self.get_cell(position[0] + 1,
-                                        position[1]).visited):
-                        row_bottom += "vvv"
-                    else:
-                        row_bottom += "   "
-                    if (cell.east or
-                            cell.south or
-                            self.get_cell(position[0] + 1, position[1]).east or
-                            self.get_cell(position[0], position[1] + 1).south):
-                        row_bottom += "██"
-                    elif (cell.visited and
-                          self.get_cell(position[0] + 1, position[1]).visited
-                          and
-                          self.get_cell(position[0], position[1] + 1).visited
-                          and
-                          self.get_cell(position[0] + 1, position[1] + 1).visited):
-                        row_bottom += "vv"
-                    else:
-                        row_bottom += "  "
+                    row_bottom += "   "
+                if (cell.east or
+                        cell.south or
+                        self.get_cell(position[0] + 1, position[1]).east or
+                        self.get_cell(position[0], position[1] + 1).south):
+                    row_bottom += "██"
+                elif (cell.visited and
+                      self.get_cell(position[0] + 1, position[1]).visited
+                      and
+                      self.get_cell(position[0], position[1] + 1).visited
+                      and
+                      self.get_cell(position[0] + 1, position[1] + 1).visited):
+                    row_bottom += "vv"
+                else:
+                    row_bottom += "  "
 
             maze_representation += row_bottom + "\n"
         return maze_representation
