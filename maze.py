@@ -34,7 +34,7 @@ COLORS = {
     "yellow":    (241, 196, 15),
     "orange":    (230, 126, 34),
     "purple":    (155, 89, 182),
-    "cyan":      (26, 188, 156),
+    "cyan":      (26, 180, 180),
     "pink":      (253, 121, 168),
     "gray":      (127, 140, 141),
     "dark_gray": (52, 73, 94),
@@ -100,7 +100,7 @@ class Maze:
                 print(file=f)
             print(f"\n{self.start[0]},{self.start[1]}", file=f)
             print(f"{self.end[0]},{self.end[1]}", file=f)
-            frame_duration = 0.1
+            frame_duration = 0.02
             wcolor = self.wcolor
             fcolor = self.fcolor
             for _ in solve_maze(self):

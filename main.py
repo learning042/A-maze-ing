@@ -5,7 +5,7 @@ from maze_gen import (MazeGenerator,
                       )
 from maze import Maze, COLORS
 from render import render_maze
-from parsing import build_config_dict
+from parsing import build_config_dict, choose_colors
 import os
 import random
 import subprocess
@@ -62,8 +62,6 @@ def main() -> None:
     if "ALGORITHM" in config:
         gen = MAZE_ALGORITHMS[config["ALGORITHM"]]()
     else:
-        # acho que deveria mandar na tela de que precisa ser
-        # um dos algoritmos validos na config e ai sar sys.exit(1)
         gen = MAZE_ALGORITHMS["DFS"]()
     maze = make_maze(config, gen)
     if maze is None:
@@ -72,7 +70,7 @@ def main() -> None:
     try:
         maze.show("hex", config["OUTPUT_FILE"])
     except KeyboardInterrupt:
-        print("\nexiting", end="", flush=True)
+        print("\nexiting", end="")
         for _ in range(3):
             print(".", end="", flush=True)
             time.sleep(1)
@@ -113,37 +111,16 @@ def main() -> None:
                 show_path = not show_path
             case 3:
                 try:
-                    color_wall = input(
-                                  "Select wall color\n"
-                                  "- Yellow\n"
-                                  "- Orange\n"
-                                  "- Purple\n"
-                                  "- Cyan\n"
-                                  "- Pink\n"
-                                  "- Gray\n"
-                                  "- Dark_gray\n"
-                                  "- Black\n"
-                                  "Choice: "
-                                  ).lower()
-                    # match ou deixar assim
-                    color_floor = input(
-                                  "Select floor color\n"
-                                  "- Yellow\n"
-                                  "- Orange\n"
-                                  "- Purple\n"
-                                  "- Cyan\n"
-                                  "- Pink\n"
-                                  "- Gray\n"
-                                  "- Dark_gray\n"
-                                  "- Black\n"
-                                  "Choice: "
-                                  ).lower()
+                    color_wall, color_floor = choose_colors()
                     maze.wcolor = COLORS[color_wall]
                     maze.fcolor = COLORS[color_floor]
                 except (KeyboardInterrupt, EOFError):
                     pass
                 except KeyError as error:
-                    print(f"Invalid key: {error}")
+                    print(f"Invalid key: {error}", file=sys.stderr)
+                except (ValueError, IndexError) as error:
+                    print(error, "\ngoing back to menu.", file=sys.stderr)
+                    time.sleep(3)
             case 4:
                 print("Exiting...")
                 done = True

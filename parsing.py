@@ -1,3 +1,7 @@
+from render import colorize_string
+from maze import COLORS
+
+
 def is_readable_line(line: str) -> bool:
     line = line.strip()
     if line == "":
@@ -29,11 +33,9 @@ def parse_config(config: dict[str, str]
         if key == "OUTPUT_FILE":
             built_config[key] = config[key]
         elif key == "ALGORITHM":
-            if config[key] not in ("DFS", "KRUSKAL", "ALDOUS_BRODER"):
-                raise ValueError(
-                                  "ALGORITHM should be "
-                                  "'DFS', 'KRUSKAL' or 'ALDOUS_BRODER'"
-                                  )
+            algorithms = ("DFS", "KRUSKAL", "ALDOUS_BRODER")
+            if config[key] not in algorithms:
+                raise ValueError(f"ALGORITHM should be one of the following {algorithms}")
             else:
                 built_config[key] = config[key]
         elif key == "PERFECT":
@@ -82,3 +84,39 @@ def build_config_dict(config_file: str
     config = {key: value for (key, value) in zip(keys, values)}
     check_config(config)
     return parse_config(config)
+
+
+def choices(colors: tuple[str, ...]) -> str:
+    result = ""
+    for index, color in enumerate(colors):
+        result += (f"{index} - {color}"
+                   f"({colorize_string('██', *COLORS[color])})\n")
+    result += "Choose a number: "
+    return result
+
+
+def choose_colors() -> tuple[str, str]:
+    colors = (
+        "yellow",
+        "orange",
+        "purple",
+        "cyan",
+        "pink",
+        "gray",
+        "dark_gray",
+        "black"
+    )
+    input_display = choices(colors)
+    color_wall = colors[int(input(
+                    "Select wall color\n"
+                    f"{input_display}"
+                    ).strip().lower())
+    ]
+    # match ou deixar assim
+    color_floor = colors[int(input(
+                    "Select floor color\n"
+                    f"{input_display}"
+                    ).strip().lower())
+    ]
+
+    return (color_wall, color_floor)
