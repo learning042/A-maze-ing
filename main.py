@@ -10,6 +10,7 @@ import os
 import random
 import subprocess
 import sys
+import time
 
 
 MAZE_ALGORITHMS = {
@@ -50,8 +51,8 @@ def main() -> None:
         sys.exit(1)
     try:
         config = build_config_dict(sys.argv[1])
-    except ValueError as e:
-        print(e, file=sys.stderr)
+    except ValueError as error:
+        print(error, file=sys.stderr)
         sys.exit(1)
     except (OSError, UnicodeDecodeError):
         print(f"Error opening {sys.argv[1]}, exiting...", file=sys.stderr)
@@ -61,12 +62,22 @@ def main() -> None:
     if "ALGORITHM" in config:
         gen = MAZE_ALGORITHMS[config["ALGORITHM"]]()
     else:
+        # acho que deveria mandar na tela de que precisa ser
+        # um dos algoritmos validos na config e ai sar sys.exit(1)
         gen = MAZE_ALGORITHMS["DFS"]()
     maze = make_maze(config, gen)
     if maze is None:
         print("Maze generation failed!", file=sys.stderr)
         sys.exit(1)
-    maze.show("hex", config["OUTPUT_FILE"])
+    try:
+        maze.show("hex", config["OUTPUT_FILE"])
+    except KeyboardInterrupt:
+        print("\nexiting", end="", flush=True)
+        for _ in range(3):
+            print(".", end="", flush=True)
+            time.sleep(1)
+        print()
+        sys.exit(1)
     done = False
     show_path = True
     while not done:
@@ -114,6 +125,7 @@ def main() -> None:
                                   "- Black\n"
                                   "Choice: "
                                   ).lower()
+                    # match ou deixar assim
                     color_floor = input(
                                   "Select floor color\n"
                                   "- Yellow\n"
