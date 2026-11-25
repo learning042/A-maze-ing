@@ -33,10 +33,9 @@ class MazeGenerator(ABC):
         if width == 0 and height == 0:
             return None
         maze = Maze(width, height, end, start, wcolor, fcolor)
+        if width < 9 or height < 6:
+            has_42 = False
         if has_42:
-            if width < 9 or height < 6:
-                del maze
-                raise ValueError("Invalid maze size.")
             maze.add_42icon()
         # limpa uma vez e esconde o cursor
         sys.stdout.write("\033[2J\033[?25l")
