@@ -11,6 +11,7 @@ import random
 import subprocess
 import sys
 import time
+import readline  # noqa: F401
 
 
 MAZE_ALGORITHMS = {
@@ -36,10 +37,13 @@ def make_maze(
                             has_42=True
                             )
         if maze is None:
-            return
+            return None
         elif not config["PERFECT"]:
             maze.pacman()
         return maze
+    except KeyboardInterrupt as kerror:
+        print(kerror, file=sys.stderr)
+        sys.exit(1)
     except Exception as error:
         print(error, file=sys.stderr)
         sys.exit(1)
@@ -86,12 +90,13 @@ def main() -> None:
         choice = 0
         while (choice not in range(1, 5)):
             try:
-                choice = int(input(
-                            "1. Re-generate a new maze\n"
-                            "2. Show / Hide the shortest path\n"
-                            "3. Change the wall colours\n"
-                            "4. Quit\n"
-                            "Choice? (1-4): "))
+                print(
+                    "1. Re-generate a new maze\n"
+                    "2. Show / Hide the shortest path\n"
+                    "3. Change the wall colours\n"
+                    "4. Quit\n"
+                    "Choice? (1-4): ")
+                choice = int(sys.stdin.readline())
             except ValueError:
                 print("Please insert a valid number", file=sys.stderr)
                 continue

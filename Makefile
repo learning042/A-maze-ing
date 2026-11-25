@@ -2,7 +2,7 @@ MYPY_FLAGS = --warn-return-any --warn-unused-ignores --ignore-missing-imports --
 
 MYPY_STRICT = --strict
 
-MAIN = main.py
+MAIN = a_maze_ing.py
 
 PKG_MANAGER ?= uv
 

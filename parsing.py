@@ -1,5 +1,6 @@
 from render import colorize_string
 from maze import COLORS
+import readline  # noqa: F401
 
 
 def is_readable_line(line: str) -> bool:
@@ -35,7 +36,8 @@ def parse_config(config: dict[str, str]
         elif key == "ALGORITHM":
             algorithms = ("DFS", "KRUSKAL", "ALDOUS_BRODER")
             if config[key] not in algorithms:
-                raise ValueError(f"ALGORITHM should be one of the following {algorithms}")
+                raise ValueError(
+                    f"ALGORITHM should be one of the following {algorithms}")
             else:
                 built_config[key] = config[key]
         elif key == "PERFECT":

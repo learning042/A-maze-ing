@@ -4,6 +4,7 @@ from collections.abc import Generator
 from cell import Cell
 from disjoint_set import DisjointSet
 from tuple_op import sum_tuples
+from render import render_maze
 
 import random
 import time
@@ -44,7 +45,7 @@ class MazeGenerator(ABC):
             # CSI n ; m H
             # Moves the cursor to row n, column m. The values are 1-based, and
             # default to 1 (top left corner) if omitted.
-            print("\033[H" + frame)
+            print("\033[H" + render_maze(frame, wcolor, fcolor))
             time.sleep(frame_duration)
         # Shows the cursor
         print("\033[?25h\n")

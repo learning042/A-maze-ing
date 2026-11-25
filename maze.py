@@ -79,7 +79,7 @@ class Maze:
         filename: str = "sys.stdout",
         clear: bool = False,
         append: bool = False,
-        solving_animation=True
+        solving_animation: bool = True
      ) -> None:
 
         from solve_maze import solve_maze, get_path
