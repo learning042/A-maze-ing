@@ -29,9 +29,10 @@ def make_maze(
             ) -> Maze | None:
     try:
         maze = gen.creator(
-                            config["WIDTH"],
-                            config["HEIGHT"],
-                            config["EXIT"],
+                            width=config["WIDTH"],
+                            height=config["HEIGHT"],
+                            end=config["EXIT"],
+                            start=config["ENTRY"],
                             wcolor=wcolor,
                             fcolor=fcolor,
                             has_42=True
@@ -73,13 +74,16 @@ def main() -> None:
         sys.exit(1)
     try:
         maze.show("hex", config["OUTPUT_FILE"])
-    except KeyboardInterrupt:
-        print("\nexiting", end="")
-        for _ in range(3):
-            print(".", end="", flush=True)
-            time.sleep(1)
-        print()
-        sys.exit(1)
+    except (KeyboardInterrupt, EOFError):
+        try:
+            print("\nexiting", end="")
+            for _ in range(3):
+                print(".", end="", flush=True)
+                time.sleep(1)
+            print()
+            sys.exit(1)
+        except KeyboardInterrupt:
+            sys.exit(1)
     done = False
     show_path = True
     while not done:
@@ -90,20 +94,21 @@ def main() -> None:
         choice = 0
         while (choice not in range(1, 5)):
             try:
-                print(
+                choice = int(input(
                     "1. Re-generate a new maze\n"
                     "2. Show / Hide the shortest path\n"
                     "3. Change the wall colours\n"
                     "4. Quit\n"
-                    "Choice? (1-4): ")
-                choice = int(sys.stdin.readline())
+                    "Choice? (1-4): "
+                ))
             except ValueError:
                 print("Please insert a valid number", file=sys.stderr)
                 continue
             except (KeyboardInterrupt, EOFError):
+                print()
                 choice = 4
             finally:
-                print("\033[7F\033[0J")
+                print("\033[0J")
         match choice:
             case 1:
                 maze = make_maze(config, gen, maze.wcolor, maze.fcolor)

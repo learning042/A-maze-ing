@@ -35,8 +35,15 @@ class MazeGenerator(ABC):
         maze = Maze(width, height, end, start, wcolor, fcolor)
         if width < 9 or height < 6:
             has_42 = False
+            print("Maze dimensions too small for 42 pattern", file=sys.stderr)
+            print("Continuing without 42 pattern...", file=sys.stderr)
+            time.sleep(1.5)
         if has_42:
             maze.add_42icon()
+        if maze.get_cell(*start).is_42:
+            raise ValueError("Start cannot be in 42 pattern")
+        if maze.get_cell(*maze.end).is_42:
+            raise ValueError("End cannot be in 42 pattern")
         # limpa uma vez e esconde o cursor
         sys.stdout.write("\033[2J\033[?25l")
         for snapshot in self.generator(maze):

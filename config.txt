@@ -3,8 +3,8 @@ WIDTH=10
 HEIGHT=10
 
 # Entry and exit
-ENTRY=0,0
-EXIT=4,4
+ENTRY=3,2
+EXIT=9,9
 
 # Output
 OUTPUT_FILE=maze.txt
